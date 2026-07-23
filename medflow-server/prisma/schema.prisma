@@ -1,0 +1,158 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------------------------------------------
+// ENUMS
+// -----------------------------------------------------------------------------
+enum Role {
+  ADMIN
+  DOCTOR
+  PATIENT
+}
+
+enum TriageSeverity {
+  GREEN   // Nhẹ, tự chăm sóc
+  YELLOW  // Cần gặp bác sĩ chuyên khoa
+  RED     // Khẩn cấp, cấp cứu
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+// -----------------------------------------------------------------------------
+// BASE USER & PROFILES
+// -----------------------------------------------------------------------------
+
+model User {
+  id        String   @id @default(uuid())
+  cognitoId String   @unique // ID trả về từ AWS Cognito
+  email     String   @unique
+  fullName  String
+  phone     String?
+  role      Role     @default(PATIENT)
+  isActive  Boolean  @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Quan hệ 1-1
+  doctorProfile  DoctorProfile?
+  patientProfile PatientProfile?
+}
+
+model DoctorProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  specialty   String   // VD: "Nội khoa", "Da liễu"
+  department  String   // VD: "Khoa Khám Bệnh"
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Quan hệ 1-n
+  availabilities DoctorAvailability[]
+  appointments   Appointment[]
+}
+
+model PatientProfile {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  dateOfBirth    DateTime?
+  gender         String?
+  bloodType      String?
+  allergies      String?  
+  medicalHistory String?  // Tiền sử bệnh
+  
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Quan hệ 1-n
+  triageSessions AiTriageSession[]
+  appointments   Appointment[]
+  medicalRecords MedicalRecord[]
+}
+
+// -----------------------------------------------------------------------------
+// AI TRIAGE & APPOINTMENTS
+// -----------------------------------------------------------------------------
+
+model AiTriageSession {
+  id                   String         @id @default(uuid())
+  patientId            String
+  symptomsSummary      String
+  severity             TriageSeverity
+  recommendedSpecialty String?
+  aiReport             String         // Báo cáo tóm tắt chuẩn y khoa
+  
+  createdAt            DateTime       @default(now())
+
+  patient              PatientProfile @relation(fields: [patientId], references: [id])
+  
+  // Quan hệ 1-1: Một phiên tư vấn có thể tạo ra tối đa 1 lịch khám
+  appointment          Appointment?
+}
+
+model DoctorAvailability {
+  id        String   @id @default(uuid())
+  doctorId  String
+  startTime DateTime
+  endTime   DateTime
+  isBooked  Boolean  @default(false)
+  
+  doctor    DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId, startTime])
+}
+
+model Appointment {
+  id              String            @id @default(uuid())
+  patientId       String
+  doctorId        String
+  triageSessionId String?           @unique
+  
+  startTime       DateTime
+  endTime         DateTime
+  status          AppointmentStatus @default(PENDING)
+  cancelReason    String?
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  patient         PatientProfile    @relation(fields: [patientId], references: [id])
+  doctor          DoctorProfile     @relation(fields: [doctorId], references: [id])
+  triageSession   AiTriageSession?  @relation(fields: [triageSessionId], references: [id])
+  
+  // Sau khi khám xong sẽ tạo hồ sơ này
+  medicalRecord   MedicalRecord?
+}
+
+// -----------------------------------------------------------------------------
+// MEDICAL RECORDS
+// -----------------------------------------------------------------------------
+
+model MedicalRecord {
+  id               String   @id @default(uuid())
+  appointmentId    String   @unique
+  patientId        String
+  
+  clinicalFindings String   // Ghi chú lâm sàng
+  finalDiagnosis   String   // Chẩn đoán chốt
+  prescription     String?  // Kê đơn
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  appointment      Appointment    @relation(fields: [appointmentId], references: [id])
+  patient          PatientProfile @relation(fields: [patientId], references: [id])
+}

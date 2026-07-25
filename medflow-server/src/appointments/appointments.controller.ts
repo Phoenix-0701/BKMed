@@ -15,6 +15,7 @@ import { UpdateAppointmentStatusDto } from './dto/update-status.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User, Role } from '@prisma/client';
+import { UpdateNotesDto } from './dto/update-notes.dto';
 
 @Controller('appointments')
 @UseGuards(JwtAuthGuard)
@@ -127,6 +128,32 @@ export class AppointmentsController {
     return this.appointmentsService.cancelAppointment(
       patientProfile.id,
       appointmentId,
+    );
+  }
+
+  // --- API GHI BỆNH ÁN (DÀNH CHO BÁC SĨ) ---
+  @Patch(':id/notes')
+  async updateNotes(
+    @Param('id') appointmentId: string,
+    @Body() dto: UpdateNotesDto,
+    @CurrentUser() user: User,
+  ) {
+    if (user.role !== Role.DOCTOR) {
+      throw new ForbiddenException(
+        'Chỉ bác sĩ mới có quyền ghi hồ sơ bệnh án.',
+      );
+    }
+
+    const doctorProfile = await this.appointmentsService[
+      'prisma'
+    ].doctorProfile.findUnique({
+      where: { userId: user.id },
+    });
+
+    return this.appointmentsService.updateAppointmentNotes(
+      doctorProfile.id,
+      appointmentId,
+      dto,
     );
   }
 }

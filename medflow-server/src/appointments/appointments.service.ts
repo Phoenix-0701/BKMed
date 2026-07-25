@@ -9,6 +9,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AppointmentStatus } from '@prisma/client';
+import { UpdateNotesDto } from './dto/update-notes.dto';
 
 @Injectable()
 export class AppointmentsService {
@@ -189,6 +190,44 @@ export class AppointmentsService {
           'Đã hủy lịch khám thành công. Khung giờ này đã được mở lại cho bệnh nhân khác.',
         appointment: cancelledAppointment,
       };
+    });
+  }
+
+  // API MỚI: Bác sĩ cập nhật hồ sơ bệnh án sau khi khám
+  async updateAppointmentNotes(
+    doctorId: string,
+    appointmentId: string,
+    dto: UpdateNotesDto,
+  ) {
+    const appointment = await this.prisma.appointment.findUnique({
+      where: { id: appointmentId },
+    });
+
+    if (!appointment) {
+      throw new NotFoundException('Không tìm thấy ca khám này.');
+    }
+
+    // Bảo mật 1: Chỉ bác sĩ phụ trách ca khám mới được viết bệnh án
+    if (appointment.doctorId !== doctorId) {
+      throw new ForbiddenException(
+        'Bạn không có quyền cập nhật bệnh án của bác sĩ khác.',
+      );
+    }
+
+    // Bảo mật 2 (Business Logic): Bắt buộc ca khám phải hoàn tất mới được chốt bệnh án
+    if (appointment.status !== AppointmentStatus.COMPLETED) {
+      throw new BadRequestException(
+        'Chỉ có thể lưu kết luận chẩn đoán khi ca khám đã được chuyển sang trạng thái Hoàn tất (COMPLETED).',
+      );
+    }
+
+    // Tiến hành lưu bệnh án vào Database
+    return this.prisma.appointment.update({
+      where: { id: appointmentId },
+      data: {
+        diagnosis: dto.diagnosis,
+        prescription: dto.prescription,
+      },
     });
   }
 }

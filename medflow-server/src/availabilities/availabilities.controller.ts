@@ -3,6 +3,7 @@ import {
   Post,
   Body,
   Get,
+  Delete,
   Param,
   Query,
   UseGuards,
@@ -49,5 +50,36 @@ export class AvailabilitiesController {
     @Query('date') date?: string, // Query Param tùy chọn (VD: ?date=2026-07-25)
   ) {
     return this.availabilitiesService.getAvailableSlotsByDoctor(doctorId, date);
+  }
+
+  // --- API XÓA LỊCH (DÀNH CHO BÁC SĨ) ---
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  async deleteSchedule(
+    @CurrentUser() user: User,
+    @Param('id') availabilityId: string,
+  ) {
+    // Chặn luồng nếu người gọi không phải là bác sĩ
+    if (user.role !== Role.DOCTOR) {
+      throw new ForbiddenException(
+        'Chỉ bác sĩ mới có quyền xóa lịch làm việc.',
+      );
+    }
+
+    // Trích xuất ID của Profile Bác sĩ
+    const doctorProfile = await this.availabilitiesService[
+      'prisma'
+    ].doctorProfile.findUnique({
+      where: { userId: user.id },
+    });
+
+    if (!doctorProfile) {
+      throw new ForbiddenException('Không tìm thấy hồ sơ bác sĩ.');
+    }
+
+    return this.availabilitiesService.deleteSlot(
+      doctorProfile.id,
+      availabilityId,
+    );
   }
 }

@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Patch,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -26,5 +34,23 @@ export class AdminController {
       specialty,
       department,
     );
+  }
+
+  // API 1: Lấy danh sách người dùng
+  @Get('users')
+  getAllUsers() {
+    return this.adminService.getAllUsers();
+  }
+
+  // API 2: Đảo trạng thái Khóa/Mở khóa tài khoản
+  @Patch('users/:id/toggle-lock')
+  toggleUserLock(@Param('id') userId: string) {
+    return this.adminService.toggleUserLock(userId);
+  }
+
+  // API 3: Thống kê Dashboard
+  @Get('dashboard')
+  getDashboardStats() {
+    return this.adminService.getDashboardStats();
   }
 }

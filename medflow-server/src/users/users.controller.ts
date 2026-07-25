@@ -1,23 +1,49 @@
-import { Controller, Get, Patch, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Body,
+  UseGuards,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '@prisma/client';
 
-// Đặt prefix là /users
 @Controller('users')
-@UseGuards(JwtAuthGuard) // Toàn bộ API trong này đều yêu cầu JWT Token
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // API Lấy hồ sơ cá nhân: GET /users/me
+  // ==========================================
+  // NHÓM PUBLIC API (Không cần đăng nhập)
+  // ==========================================
+
+  @Get('public/doctors')
+  getPublicDoctors(@Query('limit') limit?: string) {
+    return this.usersService.getPublicDoctors(
+      limit ? parseInt(limit) : undefined,
+    );
+  }
+
+  @Get('public/doctors/:id')
+  getPublicDoctorById(@Param('id') id: string) {
+    return this.usersService.getPublicDoctorById(id);
+  }
+
+  // ==========================================
+  // NHÓM PRIVATE API (Bắt buộc đăng nhập)
+  // ==========================================
+
+  @UseGuards(JwtAuthGuard) // Gắn bảo vệ vào từng hàm cụ thể
   @Get('me')
   getMe(@CurrentUser() user: User) {
     return this.usersService.getProfile(user.id, user.role);
   }
 
-  // API Cập nhật hồ sơ: PATCH /users/me
+  @UseGuards(JwtAuthGuard) // Gắn bảo vệ vào từng hàm cụ thể
   @Patch('me')
   updateMe(@CurrentUser() user: User, @Body() updateData: UpdateProfileDto) {
     return this.usersService.updateProfile(user.id, user.role, updateData);

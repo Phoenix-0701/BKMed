@@ -2,6 +2,8 @@ import {
   Injectable,
   BadRequestException,
   ConflictException,
+  NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
@@ -126,21 +128,23 @@ export class AvailabilitiesService {
 
   async getAvailableSlotsByDoctor(doctorId: string, date?: string) {
     const now = new Date();
-    
+
     // Mặc định: Luôn lọc các slot có thời gian lớn hơn hiện tại
-    let startTimeFilter: any = { gt: now }; 
+    let startTimeFilter: any = { gt: now };
 
     // Nếu Client (Next.js) có truyền query 'date' lên (VD: 2026-07-25)
     if (date) {
       const filterDate = new Date(date);
       if (isNaN(filterDate.getTime())) {
-        throw new BadRequestException('Định dạng ngày không hợp lệ. Vui lòng dùng định dạng YYYY-MM-DD.');
+        throw new BadRequestException(
+          'Định dạng ngày không hợp lệ. Vui lòng dùng định dạng YYYY-MM-DD.',
+        );
       }
-      
+
       const startOfDay = new Date(`${date}T00:00:00`);
       const endOfDay = new Date(`${date}T23:59:59`);
-      
-      // Kỹ thuật gộp điều kiện: 
+
+      // Kỹ thuật gộp điều kiện:
       // Nếu ngày lọc là hôm nay, giờ bắt đầu phải lớn hơn giờ hiện tại (now).
       // Nếu ngày lọc là ngày mai/ngày kia, giờ bắt đầu tính từ 00:00:00 (startOfDay).
       startTimeFilter = {
@@ -162,5 +166,41 @@ export class AvailabilitiesService {
     });
 
     return availableSlots;
+  }
+
+  // API MỚI: Bác sĩ xóa một khung giờ rảnh
+  async deleteSlot(doctorId: string, availabilityId: string) {
+    // 1. Kiểm tra sự tồn tại của khung giờ
+    const slot = await this.prisma.doctorAvailability.findUnique({
+      where: { id: availabilityId },
+    });
+
+    if (!slot) {
+      throw new NotFoundException('Không tìm thấy khung giờ này.');
+    }
+
+    // 2. Bảo mật: Chặn bác sĩ A xóa nhầm/cố ý xóa khung giờ của bác sĩ B
+    if (slot.doctorId !== doctorId) {
+      throw new ForbiddenException(
+        'Bạn không có quyền thao tác trên lịch của bác sĩ khác.',
+      );
+    }
+
+    // 3. Logic cốt lõi: Tuyệt đối không xóa slot đã có bệnh nhân đặt
+    if (slot.isBooked) {
+      throw new BadRequestException(
+        'Khung giờ này đã có bệnh nhân đặt lịch. Bạn cần phải hủy lịch khám đó (Appointment) trước khi xóa khung giờ.',
+      );
+    }
+
+    // 4. Tiến hành xóa khỏi cơ sở dữ liệu
+    await this.prisma.doctorAvailability.delete({
+      where: { id: availabilityId },
+    });
+
+    return {
+      message: 'Đã xóa khung giờ làm việc thành công.',
+      deletedSlotId: availabilityId,
+    };
   }
 }

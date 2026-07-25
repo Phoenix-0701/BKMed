@@ -129,6 +129,9 @@ model Appointment {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
+  diagnosis       String?           @db.Text // Kết luận chẩn đoán (Dùng @db.Text để lưu chuỗi dài)
+  prescription    String?           @db.Text // Đơn thuốc / Hướng dẫn điều trị
+
   patient         PatientProfile    @relation(fields: [patientId], references: [id])
   doctor          DoctorProfile     @relation(fields: [doctorId], references: [id])
   triageSession   AiTriageSession?  @relation(fields: [triageSessionId], references: [id])

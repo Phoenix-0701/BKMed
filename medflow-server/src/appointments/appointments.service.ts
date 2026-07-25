@@ -230,4 +230,109 @@ export class AppointmentsService {
       },
     });
   }
+
+  // API MỚI: Bác sĩ xem danh sách bệnh nhân của mình (có hỗ trợ filter)
+  async getDoctorSchedule(
+    doctorId: string,
+    date?: string,
+    status?: AppointmentStatus,
+  ) {
+    const whereClause: any = {
+      doctorId: doctorId,
+    };
+
+    // 1. Nhánh điều kiện lọc theo ngày (vd: xem lịch khám hôm nay)
+    if (date) {
+      const filterDate = new Date(date);
+      if (isNaN(filterDate.getTime())) {
+        throw new BadRequestException(
+          'Định dạng ngày không hợp lệ (YYYY-MM-DD).',
+        );
+      }
+
+      const startOfDay = new Date(`${date}T00:00:00`);
+      const endOfDay = new Date(`${date}T23:59:59`);
+
+      whereClause.startTime = {
+        gte: startOfDay,
+        lte: endOfDay,
+      };
+    }
+
+    // 2. Nhánh điều kiện lọc theo trạng thái (vd: chỉ lấy ca CONFIRMED)
+    if (status) {
+      whereClause.status = status;
+    }
+
+    // Thực thi truy vấn
+    return this.prisma.appointment.findMany({
+      where: whereClause,
+      include: {
+        // Trích xuất thông tin người bệnh để bác sĩ có thể gọi tên
+        patient: {
+          include: {
+            user: {
+              select: {
+                fullName: true,
+                phone: true,
+                email: true,
+              },
+            },
+          },
+        },
+        // Có thể lấy kèm dữ liệu AI Triage nếu có để bác sĩ đọc trước khi khám
+        triageSession: true,
+      },
+      orderBy: {
+        startTime: 'asc', // Luôn sắp xếp từ ca sáng đến ca chiều
+      },
+    });
+  }
+
+  // API MỚI: Xem chi tiết 1 ca khám (Áp dụng cho cả Admin, Bác sĩ và Bệnh nhân)
+  async getAppointmentById(appointmentId: string, currentUser: User) {
+    // 1. Truy vấn ca khám kèm theo các bảng liên quan (JOIN)
+    const appointment = await this.prisma.appointment.findUnique({
+      where: { id: appointmentId },
+      include: {
+        // Kéo thông tin Bác sĩ (và user tương ứng)
+        doctor: {
+          include: {
+            user: {
+              select: { id: true, fullName: true, email: true, phone: true },
+            },
+          },
+        },
+        // Kéo thông tin Bệnh nhân (và user tương ứng)
+        patient: {
+          include: {
+            user: {
+              select: { id: true, fullName: true, email: true, phone: true },
+            },
+          },
+        },
+        // Kéo lịch sử chat AI (nếu có)
+        // triageSession: true,
+      },
+    });
+
+    if (!appointment) {
+      throw new NotFoundException('Không tìm thấy thông tin ca khám này.');
+    }
+
+    // 2. Rào chắn bảo mật phân quyền ngang (Horizontal Authorization)
+    // Người dùng được phép xem nếu thỏa mãn MỘT TRONG BA điều kiện sau:
+    const isAdmin = currentUser.role === Role.ADMIN;
+    const isAssignedDoctor = appointment.doctor.user.id === currentUser.id;
+    const isOwnerPatient = appointment.patient.user.id === currentUser.id;
+
+    if (!isAdmin && !isAssignedDoctor && !isOwnerPatient) {
+      throw new ForbiddenException(
+        'Lỗi bảo mật: Bạn không có quyền truy cập hồ sơ bệnh án của người khác.',
+      );
+    }
+
+    // 3. Trả về dữ liệu nếu qua được chốt kiểm tra
+    return appointment;
+  }
 }

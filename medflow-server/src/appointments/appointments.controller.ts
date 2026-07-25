@@ -5,16 +5,18 @@ import {
   Get,
   Patch,
   Param,
+  Query,
   UseGuards,
   ForbiddenException,
   BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
+import { AppointmentStatus, Role, User } from '@prisma/client';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentStatusDto } from './dto/update-status.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { User, Role } from '@prisma/client';
 import { UpdateNotesDto } from './dto/update-notes.dto';
 
 @Controller('appointments')
@@ -155,5 +157,48 @@ export class AppointmentsController {
       appointmentId,
       dto,
     );
+  }
+
+  // --- API XEM LỊCH KHÁM (DÀNH CHO BÁC SĨ) ---
+  @Get('doctor-schedule')
+  async getDoctorSchedule(
+    @CurrentUser() user: User,
+    @Query('date') date?: string, // Query params nhận từ thanh URL
+    @Query('status') status?: AppointmentStatus,
+  ) {
+    // Rào chắn phân quyền: Chỉ bác sĩ mới được vào
+    if (user.role !== Role.DOCTOR) {
+      throw new ForbiddenException(
+        'Chỉ bác sĩ mới có quyền truy cập danh sách lịch khám này.',
+      );
+    }
+
+    // Tra cứu Profile Bác sĩ từ user.id
+    const doctorProfile = await this.appointmentsService[
+      'prisma'
+    ].doctorProfile.findUnique({
+      where: { userId: user.id },
+    });
+
+    if (!doctorProfile) {
+      throw new NotFoundException('Không tìm thấy hồ sơ bác sĩ hợp lệ.');
+    }
+
+    // Gọi Service
+    return this.appointmentsService.getDoctorSchedule(
+      doctorProfile.id,
+      date,
+      status,
+    );
+  }
+
+  // --- API XEM CHI TIẾT CA KHÁM (Dùng chung cho 3 Role) ---
+  @Get(':id')
+  async getAppointmentDetails(
+    @Param('id') appointmentId: string,
+    @CurrentUser() user: User, // Bắt đối tượng User từ JWT Token
+  ) {
+    // Controller chỉ làm nhiệm vụ điều hướng, logic bảo mật đã giao cho Service
+    return this.appointmentsService.getAppointmentById(appointmentId, user);
   }
 }

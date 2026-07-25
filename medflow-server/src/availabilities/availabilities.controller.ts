@@ -2,6 +2,9 @@ import {
   Controller,
   Post,
   Body,
+  Get,
+  Param,
+  Query,
   UseGuards,
   ForbiddenException,
 } from '@nestjs/common';
@@ -12,10 +15,11 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User, Role } from '@prisma/client';
 
 @Controller('availabilities')
-@UseGuards(JwtAuthGuard)
 export class AvailabilitiesController {
   constructor(private readonly availabilitiesService: AvailabilitiesService) {}
 
+  // --- API DÀNH CHO BÁC SĨ (Private) ---
+  @UseGuards(JwtAuthGuard)
   @Post('create-schedule')
   async createSchedule(
     @CurrentUser() user: User,
@@ -25,7 +29,6 @@ export class AvailabilitiesController {
       throw new ForbiddenException('Chỉ bác sĩ mới có quyền mở lịch khám.');
     }
 
-    // Lấy ID của hồ sơ bác sĩ từ DB
     const doctorProfile = await this.availabilitiesService[
       'prisma'
     ].doctorProfile.findUnique({
@@ -37,5 +40,14 @@ export class AvailabilitiesController {
     }
 
     return this.availabilitiesService.createSchedule(doctorProfile.id, dto);
+  }
+
+  // --- API DÀNH CHO CLIENT / BỆNH NHÂN (Public) ---
+  @Get('doctors/:doctorId')
+  async getDoctorSlots(
+    @Param('doctorId') doctorId: string,
+    @Query('date') date?: string, // Query Param tùy chọn (VD: ?date=2026-07-25)
+  ) {
+    return this.availabilitiesService.getAvailableSlotsByDoctor(doctorId, date);
   }
 }

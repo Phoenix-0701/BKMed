@@ -123,4 +123,44 @@ export class AvailabilitiesService {
       slots: slotsToInsert,
     };
   }
+
+  async getAvailableSlotsByDoctor(doctorId: string, date?: string) {
+    const now = new Date();
+    
+    // Mặc định: Luôn lọc các slot có thời gian lớn hơn hiện tại
+    let startTimeFilter: any = { gt: now }; 
+
+    // Nếu Client (Next.js) có truyền query 'date' lên (VD: 2026-07-25)
+    if (date) {
+      const filterDate = new Date(date);
+      if (isNaN(filterDate.getTime())) {
+        throw new BadRequestException('Định dạng ngày không hợp lệ. Vui lòng dùng định dạng YYYY-MM-DD.');
+      }
+      
+      const startOfDay = new Date(`${date}T00:00:00`);
+      const endOfDay = new Date(`${date}T23:59:59`);
+      
+      // Kỹ thuật gộp điều kiện: 
+      // Nếu ngày lọc là hôm nay, giờ bắt đầu phải lớn hơn giờ hiện tại (now).
+      // Nếu ngày lọc là ngày mai/ngày kia, giờ bắt đầu tính từ 00:00:00 (startOfDay).
+      startTimeFilter = {
+        gt: startOfDay > now ? startOfDay : now,
+        lt: endOfDay,
+      };
+    }
+
+    // Truy vấn vào Database qua Prisma
+    const availableSlots = await this.prisma.doctorAvailability.findMany({
+      where: {
+        doctorId: doctorId,
+        isBooked: false, // Core logic: Chỉ lấy slot CÒN TRỐNG
+        startTime: startTimeFilter,
+      },
+      orderBy: {
+        startTime: 'asc', // Sắp xếp từ sáng đến chiều để FE dễ render
+      },
+    });
+
+    return availableSlots;
+  }
 }

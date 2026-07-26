@@ -1,7 +1,7 @@
 // app/ChatWidget.tsx
 "use client";
 
-import { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 interface Message {
   sender: "bot" | "user";
@@ -10,7 +10,7 @@ interface Message {
 }
 
 export default function ChatWidget() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -28,27 +28,51 @@ export default function ChatWidget() {
     },
   ]);
 
-  const handleSend = () => {
+  // Hàm đóng chat dùng chung: đóng khung + xóa input đang gõ dở
+  const closeChat = useCallback(() => {
+    setIsOpen(false);
+    setInputValue("");
+  }, []);
+
+  // Lắng nghe phím Esc để đóng chat khi đang mở
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeChat();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, closeChat]);
+
+  const handleSend = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!inputValue.trim()) return;
+
     setMessages((prev) => [...prev, { sender: "user", text: inputValue }]);
     setInputValue("");
-    
-    // Giả lập bot phản hồi
+
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: "Cảm ơn bạn. AI đang phân tích dữ liệu để đưa ra phân loại mức độ..." },
+        {
+          sender: "bot",
+          text: "Cảm ơn bạn. AI đang phân tích dữ liệu để đưa ra phân loại mức độ...",
+        },
       ]);
     }, 800);
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
-      {/* Khung Chat Box */}
+    <div className="fixed bottom-6 right-6 z-[999999] flex flex-col items-end pointer-events-none">
+      {/* 1. KHUNG CHAT BOX (Mở ra khi isOpen === true) */}
       {isOpen && (
-        <div className="mb-3 w-80 sm:w-96 rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden flex flex-col h-[480px]">
+        <div className="pointer-events-auto mb-4 w-80 sm:w-96 rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden flex flex-col h-[480px]">
           {/* Header Widget */}
-          <div className="flex items-center justify-between bg-blue-600 px-4 py-3 text-white">
+          <div className="flex items-center justify-between bg-blue-600 px-4 py-3 text-white select-none">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 text-xs font-bold">
                 🤖
@@ -58,7 +82,14 @@ export default function ChatWidget() {
                 <p className="text-[10px] text-blue-100">Online • AI Triage Bot</p>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-white/80 hover:text-white">
+
+            {/* Nút X ĐÓNG khung chat */}
+            <button
+              type="button"
+              onClick={closeChat}
+              className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-white/20 text-white transition-colors cursor-pointer"
+              title="Đóng chat (Esc)"
+            >
               ✕
             </button>
           </div>
@@ -68,7 +99,9 @@ export default function ChatWidget() {
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex flex-col ${msg.sender === "user" ? "items-end" : "items-start"}`}
+                className={`flex flex-col ${
+                  msg.sender === "user" ? "items-end" : "items-start"
+                }`}
               >
                 <div
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 ${
@@ -80,16 +113,14 @@ export default function ChatWidget() {
                   {msg.text}
                 </div>
 
-                {/* Các nút bấm chọn nhanh gợi ý */}
                 {msg.suggestions && (
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {msg.suggestions.map((sug, sIdx) => (
                       <button
                         key={sIdx}
-                        onClick={() => {
-                          setInputValue(sug);
-                        }}
-                        className="rounded-full border border-gray-300 bg-white px-3 py-1 text-[11px] text-gray-700 hover:bg-gray-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                        type="button"
+                        onClick={() => setInputValue(sug)}
+                        className="rounded-full border border-gray-300 bg-white px-3 py-1 text-[11px] text-gray-700 hover:bg-gray-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 cursor-pointer"
                       >
                         {sug}
                       </button>
@@ -100,32 +131,40 @@ export default function ChatWidget() {
             ))}
           </div>
 
-          {/* Khung Nhập tin nhắn */}
-          <div className="border-t border-gray-100 p-2.5 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 flex items-center gap-2">
+          {/* Form Nhập tin nhắn */}
+          <form
+            onSubmit={handleSend}
+            className="border-t border-gray-100 p-2.5 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 flex items-center gap-2"
+          >
             <input
               type="text"
               placeholder="Nhập triệu chứng của bạn..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
               className="flex-1 rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs text-gray-900 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
             />
             <button
-              onClick={handleSend}
-              className="rounded-xl bg-blue-600 p-2 text-white hover:bg-blue-700"
+              type="submit"
+              className="rounded-xl bg-blue-600 p-2 text-white hover:bg-blue-700 transition-colors cursor-pointer"
             >
               ➤
             </button>
-          </div>
+          </form>
         </div>
       )}
 
-      {/* Nút Toggle Bật/Tắt Chat Widget */}
+      {/* 2. NÚT TRÒN BONG BÓNG (NẮM QUYỀN MỞ/TẮT) */}
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-xl hover:bg-blue-700 transition-all"
+        className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-2xl hover:bg-blue-700 active:scale-95 transition-all cursor-pointer select-none"
+        title={isOpen ? "Đóng chat" : "Mở chat AI Triage"}
       >
-        💬
+        {isOpen ? (
+          <span className="text-xl font-bold">✕</span>
+        ) : (
+          <span className="text-2xl">💬</span>
+        )}
       </button>
     </div>
   );

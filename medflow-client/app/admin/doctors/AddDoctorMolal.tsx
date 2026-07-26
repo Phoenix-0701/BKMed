@@ -2,12 +2,22 @@
 "use client";
 
 import React, { useState } from "react";
-import { DoctorFormData } from "./types";
+
+export interface NewDoctorForm {
+  fullName: string;
+  email: string;
+  phone: string;
+  specialty: string;
+  licenseNumber: string;
+  yearsOfExperience: number;
+  status: "ACTIVE" | "INACTIVE";
+  bio: string;
+}
 
 interface AddDoctorModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: DoctorFormData) => Promise<void>;
+  onSubmit: (data: NewDoctorForm) => Promise<void>;
 }
 
 export default function AddDoctorModal({
@@ -16,12 +26,15 @@ export default function AddDoctorModal({
   onSubmit,
 }: AddDoctorModalProps) {
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState<DoctorFormData>({
+  const [formData, setFormData] = useState<NewDoctorForm>({
     fullName: "",
     email: "",
     phone: "",
-    specialty: "Cardiology (Tim mạch)",
-    department: "Khoa Nội",
+    specialty: "",
+    licenseNumber: "",
+    yearsOfExperience: 5,
+    status: "ACTIVE",
+    bio: "",
   });
 
   if (!isOpen) return null;
@@ -29,109 +42,230 @@ export default function AddDoctorModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    await onSubmit(formData);
-    setSubmitting(false);
-    onClose();
+    try {
+      await onSubmit(formData);
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        specialty: "",
+        licenseNumber: "",
+        yearsOfExperience: 5,
+        status: "ACTIVE",
+        bio: "",
+      });
+      onClose();
+    } catch (err) {
+      console.error("Lỗi gửi form:", err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4 backdrop-blur-xs">
-      {/* Tối ưu Mobile: Hiển thị dạng Bottom Sheet trên Mobile, Modal ở Desktop */}
-      <div className="w-full max-w-md rounded-t-2xl sm:rounded-xl border border-gray-200 bg-white p-6 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-zinc-800">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+      <div className="relative w-full max-w-2xl rounded-2xl bg-white shadow-2xl dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 overflow-hidden">
+        
+        {/* Header Modal */}
+        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-zinc-800">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">
             Thêm Bác sĩ Mới
-          </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-2">✕</button>
+          </h2>
+          <button
+            onClick={onClose}
+            type="button"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-200 transition-colors cursor-pointer"
+          >
+            ✕
+          </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
-              Họ và tên
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="Dr. Nguyen Van A"
-              value={formData.fullName}
-              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px]"
-            />
-          </div>
+        {/* Form Body */}
+        <form onSubmit={handleSubmit}>
+          <div className="max-h-[75vh] overflow-y-auto p-6 flex flex-col gap-5">
+            
+            {/* Top Row: Avatar Upload + Full Name */}
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="flex flex-col items-center justify-center shrink-0">
+                <label className="flex h-28 w-28 cursor-pointer flex-col items-center justify-center rounded-full border-2 border-dashed border-gray-300 bg-gray-50/50 hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 transition-all">
+                  <span className="text-2xl">📷</span>
+                  <span className="mt-1 text-[11px] font-medium text-gray-500 dark:text-zinc-400">
+                    Tải ảnh lên
+                  </span>
+                  <input type="file" accept="image/*" className="hidden" />
+                </label>
+              </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
-              Email nội bộ
-            </label>
-            <input
-              type="email"
-              required
-              placeholder="doctor@hospital.com"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px]"
-            />
-          </div>
+              <div className="flex-1 w-full flex flex-col gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
+                    Họ và Tên <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Nhập họ tên đầy đủ"
+                    value={formData.fullName}
+                    onChange={(e) =>
+                      setFormData({ ...formData, fullName: e.target.value })
+                    }
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                  />
+                </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
-              Số điện thoại
-            </label>
-            <input
-              type="tel"
-              required
-              placeholder="0901234567"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px]"
-            />
-          </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
+                      Email <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="email@vien.vn"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
+                      Số Điện Thoại <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="Nhập số điện thoại"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
+                      className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <hr className="border-gray-100 dark:border-zinc-800 my-1" />
+
+            {/* Row 2: Specialty & License */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
+                  Chuyên Khoa <span className="text-rose-500">*</span>
+                </label>
+                <select
+                  required
+                  value={formData.specialty}
+                  onChange={(e) =>
+                    setFormData({ ...formData, specialty: e.target.value })
+                  }
+                  className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white cursor-pointer"
+                >
+                  <option value="">Chọn chuyên khoa</option>
+                  <option value="Cardiology (Tim mạch)">Cardiology (Tim mạch)</option>
+                  <option value="Neurology (Thần kinh)">Neurology (Thần kinh)</option>
+                  <option value="Dermatology (Da liễu)">Dermatology (Da liễu)</option>
+                  <option value="Pediatrics (Nhi khoa)">Pediatrics (Nhi khoa)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
+                  Số Giấy Phép Hành Nghề <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Nhập số GPHN"
+                  value={formData.licenseNumber}
+                  onChange={(e) =>
+                    setFormData({ ...formData, licenseNumber: e.target.value })
+                  }
+                  className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                />
+              </div>
+            </div>
+
+            {/* Row 3: Experience & Status */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
+                  Số Năm Kinh Nghiệm
+                </label>
+                <input
+                  type="number"
+                  placeholder="Vd: 10"
+                  value={formData.yearsOfExperience}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      yearsOfExperience: Number(e.target.value),
+                    })
+                  }
+                  className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
+                  Trạng Thái
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      status: e.target.value as "ACTIVE" | "INACTIVE",
+                    })
+                  }
+                  className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white cursor-pointer"
+                >
+                  <option value="ACTIVE">Đang Công Tác</option>
+                  <option value="INACTIVE">Tạm Khóa / Nghỉ</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Row 4: Bio */}
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
-                Chuyên khoa
+                Tiểu sử chuyên môn (Tùy chọn)
               </label>
-              <input
-                type="text"
-                required
-                value={formData.specialty}
-                onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px]"
+              <textarea
+                rows={3}
+                placeholder="Nhập thêm thông tin chuyên môn hoặc ghi chú..."
+                value={formData.bio}
+                onChange={(e) =>
+                  setFormData({ ...formData, bio: e.target.value })
+                }
+                className="w-full rounded-xl border border-gray-200 bg-white p-3.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white resize-none"
               />
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1">
-                Phòng / Khoa
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px]"
-              />
-            </div>
+
           </div>
 
-          <div className="mt-4 flex flex-col-reverse sm:flex-row justify-end gap-3">
+          {/* Footer Buttons */}
+          <div className="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4 dark:border-zinc-800 dark:bg-zinc-900/50">
             <button
               type="button"
               onClick={onClose}
-              className="w-full sm:w-auto rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-zinc-700 dark:text-zinc-300 min-h-[44px]"
+              className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="w-full sm:w-auto rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 min-h-[44px]"
+              className="flex items-center gap-2 rounded-xl bg-blue-700 px-6 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-800 disabled:opacity-50 transition-all cursor-pointer"
             >
-              {submitting ? "Đang xử lý..." : "Tạo Bác Sĩ"}
+              {submitting ? "Đang lưu..." : "💾 Lưu thông tin"}
             </button>
           </div>
         </form>
+
       </div>
     </div>
   );

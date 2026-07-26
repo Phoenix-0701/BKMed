@@ -33,8 +33,11 @@ export default function LoginPage() {
         throw new Error(result.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
       }
 
-      // 1. Lưu JWT Token vào LocalStorage
+      // 1. Lưu JWT Token và thông tin User vào LocalStorage
       localStorage.setItem("accessToken", result.accessToken);
+      if (result.user) {
+        localStorage.setItem("user", JSON.stringify(result.user));
+      }
 
       // 2. Phân luồng chuyển hướng dựa theo Role từ JWT/Response
       const role = result.user?.role;

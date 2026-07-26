@@ -1,0 +1,16 @@
+# Python AI Service
+medflow-ai/venv/
+medflow-ai/__pycache__/
+**/__pycache__/
+*.pyc
+medflow-ai/.env
+medflow-ai/.pytest_cache/
+
+# Node / NextJS
+node_modules/
+.next/
+dist/
+build/
+*.log
+.env.local
+.env.*.local

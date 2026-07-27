@@ -15,8 +15,6 @@ if not exist "venv\Scripts\activate.bat" (
 )
 call .\venv\Scripts\activate.bat
 echo [*] Kiem tra va bo sung thu vien AI con thieu (requirements.txt)...
-pip uninstall -y pinecone-client > nul 2>&1
-pip install --force-reinstall --no-deps "pinecone>=3.0.0" > nul 2>&1
 pip install --quiet -r requirements.txt
 
 echo [1/2] Dang khoi dong AI Backend (gRPC Server)...

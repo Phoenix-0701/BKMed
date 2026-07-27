@@ -51,9 +51,7 @@ from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_postgres import PostgresChatMessageHistory
 
-# Retrievers
-from pinecone import Pinecone
-from langchain_pinecone import PineconeVectorStore
+from langchain_aws import AmazonKnowledgeBasesRetriever
 from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
 from langchain_cohere import CohereRerank
 from langfuse.langchain import CallbackHandler
@@ -125,13 +123,13 @@ async def build_rag_chain():
     embeddings = get_openai_embeddings()
     chat_model = ChatOpenAI(model="gpt-4o-mini", temperature=0.1, streaming=True) 
 
-    logger.info("[Debug] Khởi tạo Pinecone...")
-    pc = Pinecone(api_key=os.environ.get('PINECONE_API_KEY'))
-    index_name = "medical-chatbot-advanced"
-    pinecone_index = pc.Index(index_name)
-    logger.info("[Debug] Kết nối Pinecone Index...")
-    vectorstore = PineconeVectorStore(index=pinecone_index, embedding=embeddings)
-    base_retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+    logger.info("[Debug] Khởi tạo RAG với AWS Bedrock Knowledge Bases (S3 Vector Store)...")
+    kb_id = os.environ.get("BEDROCK_KNOWLEDGE_BASE_ID", "").strip()
+    if not kb_id:
+        logger.warning("[Warning] BEDROCK_KNOWLEDGE_BASE_ID chưa được thiết lập trong .env!")
+    base_retriever = AmazonKnowledgeBasesRetriever(
+        knowledge_base_id=kb_id or "DUMMY_KB_ID"
+    )
 
     logger.info("[Debug] Khởi tạo Cohere Rerank...")
     cohere_rerank = CohereRerank(cohere_api_key=os.environ.get('COHERE_API_KEY'), model="rerank-multilingual-v3.0", top_n=3)

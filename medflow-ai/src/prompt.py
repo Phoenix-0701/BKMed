@@ -1,7 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 # 1. Prompt Dịch & Tái cấu trúc câu hỏi (Dành cho bộ máy tìm kiếm)
-# LLM sẽ đọc câu hỏi tiếng Việt của user và dịch sang tiếng Anh để Pinecone tìm kiếm chính xác nhất.
+# LLM sẽ đọc câu hỏi tiếng Việt của user và dịch sang tiếng Anh để AWS Bedrock Vector Store tìm kiếm chính xác nhất.
 contextualize_q_system_prompt = (
     "Given a chat history and the latest user question, your core task is to formulate a standalone search query IN ENGLISH. "
     "The vector database contains English medical documents, so it is CRITICAL that the search query is accurately translated to English. "

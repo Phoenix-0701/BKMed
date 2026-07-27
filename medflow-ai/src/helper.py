@@ -2,7 +2,6 @@ from langchain_community.document_loaders import DirectoryLoader, CSVLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_core.documents import Document
 from langchain_experimental.text_splitter import SemanticChunker
-from pinecone_text.sparse import BM25Encoder
 from typing import List
 
 # Extract Data From the PDF File
@@ -81,16 +80,3 @@ def get_openai_embeddings():
     Model này trả về vector 1536 dimensions (mặc định), tối ưu chi phí và hiệu suất hơn MiniLM.
     """
     return OpenAIEmbeddings(model="text-embedding-3-small")
-
-def get_bm25_encoder():
-    """
-    Khởi tạo BM25 Encoder để sinh Sparse Vector cho Hybrid Search.
-    BM25 rất nhạy với keyword (từ khóa chính xác), bổ khuyết cho Dense Vector.
-    """
-    # Khởi tạo encoder với thông số mặc định
-    bm25_encoder = BM25Encoder().default()
-    
-    # Lưu ý ở Production: Bạn nên gọi bm25_encoder.fit(corpus) với toàn bộ nội dung PDF 
-    # để thuật toán học được phân phối từ vựng, rồi lưu file model ra dạng .json.
-    # Trong phạm vi setup nhanh, chúng ta dùng trọng số mặc định.
-    return bm25_encoder

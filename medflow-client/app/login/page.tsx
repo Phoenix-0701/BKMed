@@ -17,7 +17,6 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // Thay đổi URL API auth của backend bạn ở đây (Ví dụ: /auth/login)
       const res = await fetch("http://localhost:4000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -30,29 +29,33 @@ export default function LoginPage() {
       const result = await res.json();
 
       if (!res.ok) {
-        throw new Error(result.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
+        throw new Error(result.message || "Email hoặc mật khẩu không đúng.");
       }
 
-      // 1. Lưu JWT Token và thông tin User vào LocalStorage
+      if (result.user?.isLocked) {
+        throw new Error("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin.");
+      }
+
+      // Lưu Token & User Object vào LocalStorage
       localStorage.setItem("accessToken", result.accessToken);
       if (result.user) {
         localStorage.setItem("user", JSON.stringify(result.user));
       }
 
-      // 2. Phân luồng chuyển hướng dựa theo Role từ JWT/Response
-      const role = result.user?.role;
-      if (role === "ADMIN") {
+      // Phân luồng theo Role[cite: 1]
+      const userRole = result.user?.role;
+      if (userRole === "ADMIN") {
         router.push("/admin/doctors");
-      } else if (role === "DOCTOR") {
+      } else if (userRole === "DOCTOR") {
         router.push("/doctor/schedule");
       } else {
-        router.push("/"); // Bệnh nhân về trang chủ
+        router.push("/");
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("Đã xảy ra lỗi kết nối với máy chủ.");
+        setError("Không thể kết nối đến máy chủ.");
       }
     } finally {
       setLoading(false);
@@ -61,14 +64,10 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50/60 via-white to-blue-50/30 p-4 dark:from-zinc-950 dark:via-black dark:to-zinc-900">
-      
-      {/* App Logo & Header */}
       <div className="mb-6 flex flex-col items-center text-center">
-        {/* Placeholder Icon */}
-        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-2xl dark:bg-blue-950">
+        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-2xl text-white shadow-lg">
           🩺
         </div>
-        
         <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
           MedFlow AI
         </h1>
@@ -77,17 +76,17 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* Login Card Form */}
       <LoginForm onSubmit={handleLogin} loading={loading} error={error} />
 
-      {/* Footer Register Link */}
       <p className="mt-6 text-xs text-gray-600 dark:text-zinc-400">
-        Don't have an account?{" "}
-        <Link href="/register" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">
+        {"Don't have an account? "}
+        <Link
+          href="/register"
+          className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+        >
           Register here
         </Link>
       </p>
-
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AppointmentStatus } from '@prisma/client';
 import { UpdateNotesDto } from './dto/update-notes.dto';
+import { User, Role } from '@prisma/client';
 
 @Injectable()
 export class AppointmentsService {

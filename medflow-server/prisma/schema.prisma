@@ -33,7 +33,7 @@ enum AppointmentStatus {
 }
 
 // -----------------------------------------------------------------------------
-// BASE USER & PROFILES
+// CORE HEALTHCARE MODELS (MedFlow NestJS Backend)
 // -----------------------------------------------------------------------------
 
 model User {
@@ -90,6 +90,7 @@ model PatientProfile {
 model AiTriageSession {
   id                   String         @id @default(uuid())
   patientId            String
+  sessionId            String?        @map("session_id") // Định danh luồng chat AI (khớp với ChatHistory)
   symptomsSummary      String
   severity             TriageSeverity
   recommendedSpecialty String?
@@ -110,8 +111,8 @@ model DoctorAvailability {
   endTime   DateTime
   isBooked  Boolean  @default(false)
   
-  doctor    DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-
+  doctor    DoctorProfile @relation(fields: [doctorId], references: [id])
+  
   @@index([doctorId, startTime])
 }
 
@@ -158,4 +159,115 @@ model MedicalRecord {
 
   appointment      Appointment    @relation(fields: [appointmentId], references: [id])
   patient          PatientProfile @relation(fields: [patientId], references: [id])
+}
+
+// -----------------------------------------------------------------------------
+// AI CHAT HISTORY & INTERNAL AI/CHAINLIT MODELS (Managed by Python / LangChain)
+// -----------------------------------------------------------------------------
+
+model ChatHistory {
+  id         Int      @id @default(autoincrement())
+  sessionId  String   @map("session_id") @db.Uuid
+  message    Json
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([sessionId], map: "idx_chat_history_session_id")
+  @@map("chat_history")
+}
+
+model elements {
+  id          String  @id @db.Uuid
+  threadId    String? @db.Uuid
+  type        String?
+  url         String?
+  chainlitKey String?
+  name        String
+  display     String?
+  objectKey   String?
+  size        String?
+  page        Int?
+  language    String?
+  forId       String? @db.Uuid
+  mime        String?
+
+  @@ignore
+}
+
+model feedbacks {
+  id       String  @id @db.Uuid
+  forId    String  @db.Uuid
+  threadId String  @db.Uuid
+  value    Int
+  comment  String?
+
+  @@ignore
+}
+
+model langchain_pg_collection {
+  uuid                   String                   @id @db.Uuid
+  name                   String                   @unique @db.VarChar
+  cmetadata              Json?                    @db.Json
+  langchain_pg_embedding langchain_pg_embedding[]
+
+  @@ignore
+}
+
+model langchain_pg_embedding {
+  id                      String                   @id @db.VarChar
+  collection_id           String?                  @db.Uuid
+  embedding               Unsupported("vector")?
+  document                String?                  @db.VarChar
+  cmetadata               Json?
+  langchain_pg_collection langchain_pg_collection? @relation(fields: [collection_id], references: [uuid], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([cmetadata(ops: JsonbPathOps)], map: "ix_cmetadata_gin", type: Gin)
+  @@ignore
+}
+
+model steps {
+  id              String   @id @db.Uuid
+  name            String
+  type            String
+  threadId        String   @db.Uuid
+  parentId        String?  @db.Uuid
+  disableFeedback Boolean  @default(false)
+  streaming       Boolean
+  waitForAnswer   Boolean?
+  isError         Boolean?
+  metadata        Json?
+  tags            String[]
+  input           String?
+  output          String?
+  createdAt       String?
+  start           String?
+  end             String?
+  generation      Json?
+  showInput       String?
+  language        String?
+  indent          Int?
+
+  @@ignore
+}
+
+model threads {
+  id             String   @id @db.Uuid
+  createdAt      String?
+  name           String?
+  userId         String?  @db.Uuid
+  userIdentifier String?
+  tags           String[]
+  metadata       Json?
+  users          users?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@ignore
+}
+
+model users {
+  id         String    @id @db.Uuid
+  identifier String    @unique
+  metadata   Json
+  createdAt  String?
+  threads    threads[]
+
+  @@ignore
 }

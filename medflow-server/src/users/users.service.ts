@@ -84,42 +84,57 @@ export class UsersService {
   }
 
   // Hàm lấy danh sách bác sĩ cho Landing Page
+  // async getPublicDoctors(limit: number = 4) {
+  //   return this.prisma.user.findMany({
+  //     where: {
+  //       role: Role.DOCTOR,
+  //     },
+  //     select: {
+  //       id: true,
+  //       fullName: true,
+  //       doctorProfile: {
+  //         select: {
+  //           specialty: true,
+  //           department: true,
+  //         },
+  //       },
+  //     },
+  //     take: limit, // Lấy 4 bác sĩ nổi bật nhất
+  //   });
+  // }
+  // // 1. PUBLIC API: Lấy danh sách tất cả bác sĩ
+  // async getPublicDoctors(limit?: number) {
+  //   return this.prisma.user.findMany({
+  //     where: {
+  //       role: Role.DOCTOR,
+  //     },
+  //     select: {
+  //       id: true,
+  //       fullName: true,
+  //       doctorProfile: {
+  //         select: {
+  //           specialty: true,
+  //           department: true,
+  //         },
+  //       },
+  //     },
+  //     // Nếu có truyền limit, sẽ giới hạn số lượng trả về (VD: lấy 4 bác sĩ cho trang chủ)
+  //     take: limit ? Number(limit) : undefined,
+  //   });
+  // }
+
   async getPublicDoctors(limit: number = 4) {
-    return this.prisma.user.findMany({
-      where: {
-        role: Role.DOCTOR,
-      },
-      select: {
-        id: true,
-        fullName: true,
-        doctorProfile: {
+    return this.prisma.doctorProfile.findMany({
+      take: limit,
+      include: {
+        user: {
           select: {
-            specialty: true,
-            department: true,
+            id: true,
+            fullName: true,
+            email: true,
           },
         },
       },
-      take: limit, // Lấy 4 bác sĩ nổi bật nhất
-    });
-  }
-  // 1. PUBLIC API: Lấy danh sách tất cả bác sĩ
-  async getPublicDoctors(limit?: number) {
-    return this.prisma.user.findMany({
-      where: {
-        role: Role.DOCTOR,
-      },
-      select: {
-        id: true,
-        fullName: true,
-        doctorProfile: {
-          select: {
-            specialty: true,
-            department: true,
-          },
-        },
-      },
-      // Nếu có truyền limit, sẽ giới hạn số lượng trả về (VD: lấy 4 bác sĩ cho trang chủ)
-      take: limit ? Number(limit) : undefined,
     });
   }
 

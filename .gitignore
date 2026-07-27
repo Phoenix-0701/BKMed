@@ -1,5 +1,6 @@
 # Python AI Service
 medflow-ai/venv/
+medflow-ai/data/
 medflow-ai/__pycache__/
 **/__pycache__/
 *.pyc

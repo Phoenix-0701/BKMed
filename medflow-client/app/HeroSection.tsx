@@ -24,12 +24,9 @@ export default function HeroSection() {
 
         {/* Call to Actions */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button className="w-full sm:w-auto min-h-[48px] rounded-lg bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow-md hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+          <a href="/login" className="w-full sm:w-auto min-h-[48px] rounded-lg bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow-md hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
             Khám phá ngay <span>→</span>
-          </button>
-          <button className="w-full sm:w-auto min-h-[48px] rounded-lg border border-gray-300 bg-white px-6 py-3 text-base font-semibold text-gray-700 hover:bg-gray-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 transition-all flex items-center justify-center gap-2">
-            <span>▶</span> Xem video giới thiệu
-          </button>
+          </a>
         </div>
 
         {/* Main Banner Image */}
@@ -41,6 +38,7 @@ export default function HeroSection() {
             height={600}
             className="w-full h-auto object-cover max-h-[500px]"
             priority
+            unoptimized={true}
           />
         </div>
 

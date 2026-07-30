@@ -11,6 +11,8 @@ services:
       - "50051:50051"
     environment:
       - GRPC_HOST=0.0.0.0
+    env_file:
+      - ./medflow-ai/.env
     # Cấu hình tự động restart khi sập
     restart: unless-stopped
 
@@ -21,16 +23,6 @@ services:
     container_name: medflow-server
     ports:
       - "4000:4000"
-    environment:
-      # Lấy trực tiếp từ file .env trong host hoặc định nghĩa tại đây
-      - DATABASE_URL=${DATABASE_URL}
-      - AWS_REGION=${AWS_REGION}
-      - COGNITO_USER_POOL_ID=${COGNITO_USER_POOL_ID}
-      - COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID}
-      - COGNITO_CLIENT_SECRET=${COGNITO_CLIENT_SECRET}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
     env_file:
       - ./medflow-server/.env
     restart: unless-stopped

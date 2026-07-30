@@ -169,6 +169,7 @@ export class UsersService {
             id: true,
             fullName: true,
             email: true,
+            avatarUrl: true,
           },
         },
       },
@@ -243,5 +244,64 @@ export class UsersService {
         bloodType: data.bloodType,
       }
     });
+  }
+
+  // --- API DÀNH CHO LANDING PAGE / PUBLIC ---
+  async getPublicReviews(limit: number = 3) {
+    return this.prisma.appointment.findMany({
+      where: {
+        rating: 5,
+        reviewText: { not: null },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: limit,
+      include: {
+        patient: {
+          include: {
+            user: {
+              select: {
+                fullName: true,
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  async getTopDoctors() {
+    const doctors = await this.prisma.doctorProfile.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+            avatarUrl: true,
+          }
+        },
+        appointments: {
+          where: { rating: { not: null } },
+          select: { rating: true }
+        }
+      }
+    });
+
+    return doctors.map(doc => {
+      const totalReviews = doc.appointments.length;
+      const averageRating = totalReviews > 0 
+        ? doc.appointments.reduce((acc, curr) => acc + (curr.rating || 0), 0) / totalReviews 
+        : 0;
+
+      // Xóa mảng appointments khỏi response để nhẹ payload
+      const { appointments, ...rest } = doc;
+      return {
+        ...rest,
+        totalReviews,
+        averageRating: Number(averageRating.toFixed(1))
+      };
+    }).sort((a, b) => b.averageRating - a.averageRating);
   }
 }

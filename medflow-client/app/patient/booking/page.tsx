@@ -55,8 +55,8 @@ export default function BookingPage() {
       try {
         const token = localStorage.getItem("accessToken");
         
-        // A. Fetch Bác sĩ (Public API)
-        const docsRes = await fetch("http://127.0.0.1:4000/users/public/doctors?limit=50");
+        // A. Fetch Bác sĩ (Public API - top-doctors để lấy rating)
+        const docsRes = await fetch("http://127.0.0.1:4000/users/public/top-doctors");
         if (docsRes.ok) {
           const docsJson = await docsRes.json();
           const docsData = docsJson.data || docsJson || [];
@@ -280,17 +280,22 @@ export default function BookingPage() {
                     </div>
                   )}
 
-                  {/* Avatar (Placeholder) */}
-                  <div className="h-20 w-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden mb-4 border-2 border-white shadow-sm ring-1 ring-gray-100 dark:bg-zinc-800 dark:border-zinc-800 dark:ring-zinc-700">
-                    <span className="text-3xl text-gray-400">👤</span>
+                  {/* Avatar */}
+                  <div className="h-20 w-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden mb-4 border-2 border-white shadow-sm ring-1 ring-gray-100 dark:bg-zinc-800 dark:border-zinc-800 dark:ring-zinc-700 relative">
+                    <Image
+                      src={doc.user?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(doc.user?.fullName || "Doctor")}&background=random&size=300`}
+                      alt={doc.user?.fullName || "Doctor"}
+                      fill
+                      className="object-cover"
+                      unoptimized={true}
+                    />
                   </div>
 
                   <h4 className="font-bold text-gray-900 dark:text-white text-center">BS. {doc.user?.fullName}</h4>
                   <p className="text-xs text-gray-500 mt-1">{doc.specialty || "Bác sĩ điều trị"}</p>
                   
-                  {/* Rating giả lập */}
                   <div className="flex items-center gap-1 mt-2 mb-4 text-xs font-medium text-gray-600 dark:text-zinc-400">
-                    <span className="text-orange-400">★</span> 5.0 <span className="text-gray-400 font-normal">(120 đánh giá)</span>
+                    <span className="text-orange-400">★</span> {doc.averageRating ? doc.averageRating.toFixed(1) : "0.0"} <span className="text-gray-400 font-normal">({doc.totalReviews || 0} đánh giá)</span>
                   </div>
 
                   <button 

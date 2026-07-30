@@ -34,6 +34,16 @@ export class UsersController {
     return this.usersService.getPublicDoctorById(id);
   }
 
+  @Get('public/reviews')
+  getPublicReviews(@Query('limit') limit?: string) {
+    return this.usersService.getPublicReviews(limit ? parseInt(limit) : 3);
+  }
+
+  @Get('public/top-doctors')
+  getTopDoctors() {
+    return this.usersService.getTopDoctors();
+  }
+
   // ==========================================
   // NHÓM PRIVATE API (Bắt buộc đăng nhập)
   // ==========================================

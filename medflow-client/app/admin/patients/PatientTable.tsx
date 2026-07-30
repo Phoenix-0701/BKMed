@@ -79,9 +79,13 @@ export default function PatientTable({ patients, onToggleLock }: PatientTablePro
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">
                       <div className="relative h-11 w-11 shrink-0">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold dark:bg-blue-900/50 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
-                          {pat.fullName?.charAt(0).toUpperCase()}
-                        </div>
+                        <Image
+                          src={pat.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(pat.fullName || "User")}&background=random&size=150`}
+                          alt={pat.fullName || "Patient Avatar"}
+                          fill
+                          className="rounded-full object-cover border border-gray-200 dark:border-zinc-700"
+                          unoptimized={true}
+                        />
                         <span className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-900 ${!pat.isLocked ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
                       </div>
                       <div>

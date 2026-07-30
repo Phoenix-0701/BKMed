@@ -5,5 +5,6 @@ export interface Patient {
   phone: string;
   dateOfBirth?: string;
   gender?: string;
+  avatar?: string;
   isLocked: boolean;
 }

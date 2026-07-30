@@ -12,13 +12,6 @@ export default function Header() {
           BKMed AI
         </Link>
 
-        {/* Navigation Links - Desktop */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-zinc-300">
-          <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
-          <a href="#triage" className="text-blue-600 font-semibold dark:text-blue-400">AI Triage</a>
-          <a href="#accuracy" className="hover:text-blue-600 transition-colors">Clinical Accuracy</a>
-          <a href="#enterprise" className="hover:text-blue-600 transition-colors">Enterprise</a>
-        </nav>
 
         {/* Auth Buttons */}
         <div className="flex items-center gap-3">

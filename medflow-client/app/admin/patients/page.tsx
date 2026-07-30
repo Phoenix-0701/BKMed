@@ -38,8 +38,9 @@ export default function PatientsPage() {
         const users = resJson.data || resJson;
         const patientList = users
           .filter((u: { role: string }) => u.role === "PATIENT")
-          .map((u: { id: string; fullName: string; email: string; phone: string; patientProfile?: { dateOfBirth: string; gender: string }; isLocked: boolean }) => ({
+          .map((u: { id: string; fullName: string; email: string; phone: string; avatarUrl?: string; patientProfile?: { dateOfBirth: string; gender: string }; isLocked: boolean }) => ({
             id: u.id,
+            avatar: u.avatarUrl,
             fullName: u.fullName || "Bệnh nhân",
             email: u.email,
             phone: u.phone || "Chưa cập nhật",

@@ -85,10 +85,11 @@ export default function DoctorTable({ doctors, onToggleLock }: DoctorTableProps)
                     <div className="flex items-center gap-4">
                       <div className="relative h-11 w-11 shrink-0">
                         <Image
-                          src={doc.avatar || "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150"}
+                          src={doc.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(doc.fullName || "Doctor")}&background=random&size=150`}
                           alt={doc.fullName || "Doctor Avatar"}
                           fill
                           className="rounded-full object-cover border border-gray-200 dark:border-zinc-700"
+                          unoptimized={true}
                         />
                         <span className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white dark:border-zinc-900 ${doc.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
                       </div>

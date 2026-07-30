@@ -17,4 +17,4 @@ RUN chmod +x start.sh
 
 EXPOSE 8080 50051
 
-CMD ["./start.sh"]
+CMD ["bash", "-c", "python backend/grpc_server.py & uvicorn backend.fastapi_app:app --host 0.0.0.0 --port 8080"]

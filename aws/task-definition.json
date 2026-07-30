@@ -58,11 +58,11 @@
                     "valueFrom": "arn:aws:ssm:ap-southeast-2:258174056716:parameter/COGNITO_CLIENT_SECRET"
                 },
                 {
-                    "name": "ACCESS_KEY_ID",
+                    "name": "AWS_ACCESS_KEY_ID",
                     "valueFrom": "arn:aws:ssm:ap-southeast-2:258174056716:parameter/ACCESS_KEY_ID"
                 },
                 {
-                    "name": "SECRET_ACCESS_KEY",
+                    "name": "AWS_SECRET_ACCESS_KEY",
                     "valueFrom": "arn:aws:ssm:ap-southeast-2:258174056716:parameter/SECRET_ACCESS_KEY"
                 }
             ],

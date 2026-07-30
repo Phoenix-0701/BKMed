@@ -37,8 +37,6 @@ base_footer = (
     "\n\n---\n"
     "Thông tin trên được hỗ trợ bởi Trí tuệ nhân tạo, chỉ phục vụ mục đích tham khảo, không mang tính chất khuyến nghị y khoa. "
     "Vui lòng liên hệ bác sĩ để được tham vấn chi tiết bằng cách gọi hotline (84) 19006969 để có giải pháp chính xác.\n\n"
-    "IMPORTANT: Based on the patient's symptoms or requests, determine the MOST SUITABLE clinical department from MedFlow Hospital's official list. "
-    "You MUST append this exact format at the very end of your response: <triage>Department Name|Brief reasoning for this department (under 15 words)</triage>"
 )
 
 medflow_departments_info = (

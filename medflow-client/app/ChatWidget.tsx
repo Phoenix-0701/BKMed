@@ -194,24 +194,12 @@ export default function ChatWidget() {
               } catch (e) {
                 // Không phải chuỗi JSON thì giữ nguyên string
               }
+
               setMessages((prev) => {
                 const newArr = [...prev];
                 const lastIdx = newArr.length - 1;
                 if (lastIdx >= 0 && newArr[lastIdx].sender === "bot") {
                   let updatedText = newArr[lastIdx].text + token;
-
-                  const triageMatch = updatedText.match(/<triage>([\s\S]*?)<\/triage>/i);
-                  if (triageMatch) {
-                    const [department, ...reasonParts] = triageMatch[1].split('|');
-                    const reason = reasonParts.join('|').trim();
-                    const cleanedDept = department ? department.trim() : '';
-                    if (cleanedDept) {
-                      localStorage.setItem('aiTriage', JSON.stringify({ department: cleanedDept, reason }));
-                      localStorage.setItem('chatSessionId', sessionId);
-                      window.dispatchEvent(new Event('aiTriageUpdated'));
-                    }
-                    updatedText = updatedText.replace(triageMatch[0], '').trim();
-                  }
 
                   newArr[lastIdx] = {
                     ...newArr[lastIdx],

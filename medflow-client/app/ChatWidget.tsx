@@ -82,7 +82,7 @@ export default function ChatWidget() {
     return () => window.removeEventListener("storage", checkUserContext);
   }, []);
 
-  // 2. Quản lý Session độc lập cho từng User ID
+  // 2. Quản lý Session độc lập cho từng User ID và khôi phục lịch sử chat
   useEffect(() => {
     if (!userId) return;
     const sessionKey = `bkmed_chat_session_${userId}`;
@@ -94,7 +94,32 @@ export default function ChatWidget() {
     }
     
     setSessionId(savedSessionId);
+
+    // Khôi phục tin nhắn
+    const msgKey = `bkmed_chat_messages_${userId}`;
+    const savedMsgStr = localStorage.getItem(msgKey);
+    if (savedMsgStr) {
+      try {
+        const savedMsg = JSON.parse(savedMsgStr);
+        if (Array.isArray(savedMsg) && savedMsg.length > 0) {
+          setMessages(savedMsg);
+        } else {
+          setMessages([defaultGreeting]);
+        }
+      } catch (e) {
+        setMessages([defaultGreeting]);
+      }
+    } else {
+      setMessages([defaultGreeting]);
+    }
   }, [userId]);
+
+  // 3. Lưu tin nhắn vào localStorage mỗi khi có thay đổi
+  useEffect(() => {
+    if (!userId || messages.length === 0) return;
+    const msgKey = `bkmed_chat_messages_${userId}`;
+    localStorage.setItem(msgKey, JSON.stringify(messages));
+  }, [messages, userId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -105,7 +130,13 @@ export default function ChatWidget() {
     if (isStreaming || !userId) return;
     const newSessionId = crypto.randomUUID();
     const sessionKey = `bkmed_chat_session_${userId}`;
+    const msgKey = `bkmed_chat_messages_${userId}`;
+    
     localStorage.setItem(sessionKey, newSessionId);
+    localStorage.removeItem(msgKey); // Xóa lịch sử cũ
+    localStorage.removeItem('aiTriage'); // Xóa luôn gợi ý khoa cũ
+    localStorage.removeItem('chatSessionId');
+    
     setSessionId(newSessionId);
     setMessages([defaultGreeting]);
   };
@@ -167,9 +198,24 @@ export default function ChatWidget() {
                 const newArr = [...prev];
                 const lastIdx = newArr.length - 1;
                 if (lastIdx >= 0 && newArr[lastIdx].sender === "bot") {
+                  let updatedText = newArr[lastIdx].text + token;
+
+                  const triageMatch = updatedText.match(/<triage>([\s\S]*?)<\/triage>/i);
+                  if (triageMatch) {
+                    const [department, ...reasonParts] = triageMatch[1].split('|');
+                    const reason = reasonParts.join('|').trim();
+                    const cleanedDept = department ? department.trim() : '';
+                    if (cleanedDept) {
+                      localStorage.setItem('aiTriage', JSON.stringify({ department: cleanedDept, reason }));
+                      localStorage.setItem('chatSessionId', sessionId);
+                      window.dispatchEvent(new Event('aiTriageUpdated'));
+                    }
+                    updatedText = updatedText.replace(triageMatch[0], '').trim();
+                  }
+
                   newArr[lastIdx] = {
                     ...newArr[lastIdx],
-                    text: newArr[lastIdx].text + token,
+                    text: updatedText,
                   };
                 }
                 return newArr;

@@ -48,3 +48,51 @@ async def chat_endpoint(session_id: str, message: str):
     )
 
 # Chạy server bằng lệnh: uvicorn fastapi_app:app --port 8000
+
+from pydantic import BaseModel
+class TriageRequest(BaseModel):
+    session_id: str
+
+@app.post("/api/triage/generate")
+async def generate_triage(req: TriageRequest):
+    import psycopg
+    from psycopg.rows import dict_row
+    from langchain_openai import ChatOpenAI
+    from langchain_core.prompts import ChatPromptTemplate
+    import json
+    
+    DB_URI = os.environ.get('DB_URI')
+    try:
+        async with await psycopg.AsyncConnection.connect(DB_URI, autocommit=True) as conn:
+            async with conn.cursor(row_factory=dict_row) as cur:
+                await cur.execute("SELECT message FROM chat_history WHERE session_id = %s ORDER BY id ASC", (req.session_id,))
+                rows = await cur.fetchall()
+                if not rows:
+                    return {"symptomsSummary": "Không có lịch sử", "severity": "GREEN", "recommendedSpecialty": "N/A", "aiReport": "Bệnh nhân không chia sẻ triệu chứng."}
+                
+                chat_text = "\n".join([row["message"] for row in rows])
+                
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", "Dựa vào lịch sử chat sau của bệnh nhân, hãy tạo một báo cáo tóm tắt y khoa (AI Report). Trả về ĐÚNG chuẩn JSON với các key sau (Không thêm markup ```json):\n"
+                       "- symptomsSummary: tóm tắt triệu chứng (1-2 câu)\n"
+                       "- severity: đánh giá mức độ khẩn cấp (CHỈ ĐƯỢC CHỌN 1 TRONG 3: GREEN, YELLOW, RED)\n"
+                       "- recommendedSpecialty: chuyên khoa đề xuất (nếu có)\n"
+                       "- aiReport: báo cáo chuyên môn chi tiết dành cho bác sĩ khám (tầm 3-4 câu)"),
+            ("human", "Lịch sử chat:\n{chat_text}\n\nJSON Output:")
+        ])
+        chain = prompt | llm
+        result = await chain.ainvoke({"chat_text": chat_text})
+        
+        content = result.content.strip()
+        if content.startswith("```json"):
+            content = content[7:-3].strip()
+        elif content.startswith("```"):
+            content = content[3:-3].strip()
+            
+        data = json.loads(content)
+        return data
+        
+    except Exception as e:
+        print(f"LỖI TRIAGE: {e}")
+        return {"symptomsSummary": "Lỗi", "severity": "GREEN", "recommendedSpecialty": "N/A", "aiReport": str(e)}

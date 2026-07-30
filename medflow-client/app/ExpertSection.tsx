@@ -23,10 +23,10 @@ export default function ExpertSection() {
     async function loadDoctors() {
       try {
         // Gọi API Public của backend NestJS
-        const res = await fetch("http://localhost:4000/users/public/doctors?limit=4");
+        const res = await fetch("http://127.0.0.1:4000/users/public/doctors?limit=4");
         if (res.ok) {
-          const data = await res.json();
-          setDoctors(data);
+          const json = await res.json();
+          setDoctors(json.data || json);
         }
       } catch (err) {
         console.error("Lỗi lấy danh sách bác sĩ công khai:", err);

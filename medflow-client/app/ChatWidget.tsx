@@ -24,6 +24,13 @@ export default function ChatWidget() {
     setInputValue("");
   }, []);
 
+  // Lắng nghe sự kiện mở chat từ các component khác
+  useEffect(() => {
+    const handleOpenChat = () => setIsOpen(true);
+    window.addEventListener("open-ai-chat", handleOpenChat);
+    return () => window.removeEventListener("open-ai-chat", handleOpenChat);
+  }, []);
+
   // Lắng nghe phím Esc để đóng chat khi đang mở
   useEffect(() => {
     if (!isOpen) return;
@@ -93,12 +100,7 @@ export default function ChatWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isStreaming]);
 
-  // Nếu người dùng là Bác sĩ hoặc Admin thì ẩn hoàn toàn Chatbot
-  if (userRole === "DOCTOR" || userRole === "ADMIN") {
-    return null;
-  }
-
-  // Tính năng bắt đầu hội thoại mới cho Bệnh nhân
+  // Tính năng bắt đầu hội thoại mới
   const handleResetChat = () => {
     if (isStreaming || !userId) return;
     const newSessionId = crypto.randomUUID();
@@ -312,7 +314,7 @@ export default function ChatWidget() {
                 🤖
               </div>
               <div>
-                <h4 className="text-base font-bold">MedFlow AI Assistant</h4>
+                <h4 className="text-base font-bold">BKMed AI Assistant</h4>
                 <p className="text-xs text-blue-100">
                   {isStreaming ? "AI đang trả lời..." : "Online • Trợ lý 24/7"}
                 </p>

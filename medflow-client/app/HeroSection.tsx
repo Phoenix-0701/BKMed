@@ -36,7 +36,7 @@ export default function HeroSection() {
         <div className="mt-12 sm:mt-16 overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 shadow-xl dark:border-zinc-800 dark:bg-zinc-900">
           <Image
             src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1200&auto=format&fit=crop"
-            alt="MedFlow AI Hospital Banner"
+            alt="BKMed AI Hospital Banner"
             width={1200}
             height={600}
             className="w-full h-auto object-cover max-h-[500px]"

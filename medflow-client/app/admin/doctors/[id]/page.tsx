@@ -24,7 +24,7 @@ export default function DoctorDetailPage({ params }: { params: Promise<{ id: str
   const fetchDoctorDetail = useCallback(async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`http://127.0.0.1:4000/admin/doctors/${doctorId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/admin/doctors/${doctorId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error("Không thể tải thông tin bác sĩ");
@@ -75,7 +75,7 @@ export default function DoctorDetailPage({ params }: { params: Promise<{ id: str
     if (!doctor) return;
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`http://127.0.0.1:4000/admin/users/${doctorId}/toggle-lock`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/admin/users/${doctorId}/toggle-lock`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -91,7 +91,7 @@ export default function DoctorDetailPage({ params }: { params: Promise<{ id: str
   const handleSaveEdit = async (data: any) => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`http://127.0.0.1:4000/admin/doctors/${doctorId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/admin/doctors/${doctorId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

@@ -89,7 +89,9 @@ export default function ChatWidget() {
     let savedSessionId = localStorage.getItem(sessionKey);
     
     if (!savedSessionId) {
-      savedSessionId = crypto.randomUUID();
+      savedSessionId = (window.crypto && window.crypto.randomUUID) 
+        ? window.crypto.randomUUID() 
+        : (Math.random().toString(36).substring(2) + Date.now().toString(36));
       localStorage.setItem(sessionKey, savedSessionId);
     }
     

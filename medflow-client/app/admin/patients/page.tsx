@@ -24,7 +24,7 @@ export default function PatientsPage() {
       setLoading(true);
       const token = localStorage.getItem("accessToken");
 
-      const res = await fetch("http://127.0.0.1:4000/admin/users", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/admin/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -66,7 +66,7 @@ export default function PatientsPage() {
     try {
       const token = localStorage.getItem("accessToken");
       
-      const res = await fetch("http://127.0.0.1:4000/admin/patients", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/admin/patients`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,7 +101,7 @@ export default function PatientsPage() {
     try {
       const token = localStorage.getItem("accessToken");
       const res = await fetch(
-        `http://127.0.0.1:4000/admin/users/${patientId}/toggle-lock`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/admin/users/${patientId}/toggle-lock`,
         {
           method: "PATCH",
           headers: { Authorization: `Bearer ${token}` },

@@ -133,7 +133,7 @@ export default function ConsultationModal({ isOpen, onClose, appointment, onComp
         ? JSON.stringify(medicines) 
         : "";
 
-      const res = await fetch(`http://127.0.0.1:4000/appointments/${appointment.id}/notes`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/appointments/${appointment.id}/notes`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

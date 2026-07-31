@@ -42,7 +42,7 @@ export default function DoctorSchedulePage() {
       const token = localStorage.getItem("accessToken");
 
       const res = await fetch(
-        `http://127.0.0.1:4000/appointments/doctor-schedule`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/appointments/doctor-schedule`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

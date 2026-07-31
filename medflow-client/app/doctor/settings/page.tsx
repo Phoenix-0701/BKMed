@@ -56,8 +56,8 @@ export default function DoctorSettingsPage() {
       const headers = { Authorization: `Bearer ${token}` };
 
       const [scheduleRes, leavesRes] = await Promise.all([
-        fetch("http://127.0.0.1:4000/availabilities/weekly-schedule", { headers }),
-        fetch("http://127.0.0.1:4000/availabilities/leaves", { headers })
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/availabilities/weekly-schedule`, { headers }),
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/availabilities/leaves`, { headers })
       ]);
 
       if (scheduleRes.status === 401 || leavesRes.status === 401) {
@@ -102,7 +102,7 @@ export default function DoctorSettingsPage() {
     setIsSaving(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("http://127.0.0.1:4000/availabilities/weekly-schedule", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/availabilities/weekly-schedule`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(schedule)
@@ -127,7 +127,7 @@ export default function DoctorSettingsPage() {
     
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("http://127.0.0.1:4000/availabilities/leaves", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/availabilities/leaves`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ startDate: leaveStart, endDate: leaveEnd, reason: leaveReason })
@@ -150,7 +150,7 @@ export default function DoctorSettingsPage() {
     if (!confirm("Bạn có chắc muốn hủy ngày nghỉ này?")) return;
     try {
       const token = localStorage.getItem("accessToken");
-      await fetch(`http://127.0.0.1:4000/availabilities/leaves/${id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/availabilities/leaves/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });

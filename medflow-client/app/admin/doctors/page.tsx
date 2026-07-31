@@ -19,7 +19,7 @@ export default function DoctorsPage() {
       setLoading(true);
       const token = localStorage.getItem("accessToken");
 
-      const res = await fetch("http://127.0.0.1:4000/admin/users", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/admin/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -63,7 +63,7 @@ export default function DoctorsPage() {
       const token = localStorage.getItem("accessToken");
       
       // Gọi API thêm bác sĩ của NestJS
-      const res = await fetch("http://127.0.0.1:4000/admin/doctors", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/admin/doctors`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,7 +101,7 @@ export default function DoctorsPage() {
     try {
       const token = localStorage.getItem("accessToken");
       const res = await fetch(
-        `http://127.0.0.1:4000/admin/users/${doctorId}/toggle-lock`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/admin/users/${doctorId}/toggle-lock`,
         {
           method: "PATCH",
           headers: { Authorization: `Bearer ${token}` },

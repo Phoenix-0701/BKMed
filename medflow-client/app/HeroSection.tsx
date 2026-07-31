@@ -38,7 +38,6 @@ export default function HeroSection() {
             height={600}
             className="w-full h-auto object-cover max-h-[500px]"
             priority
-            unoptimized={true}
           />
         </div>
 

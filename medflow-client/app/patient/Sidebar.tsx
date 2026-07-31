@@ -31,7 +31,7 @@ export default function PatientSidebar() {
       const token = localStorage.getItem("accessToken");
       if (!token) return;
       try {
-        const res = await fetch("http://127.0.0.1:4000/users/me", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {

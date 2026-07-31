@@ -55,7 +55,7 @@ export default function HistoryDetailModal({ isOpen, onClose, appointment, onRev
     
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`http://127.0.0.1:4000/appointments/${appointment.id}/review`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/appointments/${appointment.id}/review`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

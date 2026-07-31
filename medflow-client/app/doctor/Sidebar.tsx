@@ -30,7 +30,7 @@ export default function DoctorSidebar() {
     // 2. Fetch API để lấy chức danh chính xác nhất
     const token = localStorage.getItem("accessToken");
     if (token) {
-      fetch("http://127.0.0.1:4000/users/me", {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => res.json())

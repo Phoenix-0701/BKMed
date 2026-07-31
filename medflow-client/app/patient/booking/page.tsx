@@ -56,7 +56,7 @@ export default function BookingPage() {
         const token = localStorage.getItem("accessToken");
         
         // A. Fetch Bác sĩ (Public API - top-doctors để lấy rating)
-        const docsRes = await fetch("http://127.0.0.1:4000/users/public/top-doctors");
+        const docsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/users/public/top-doctors`);
         if (docsRes.ok) {
           const docsJson = await docsRes.json();
           const docsData = docsJson.data || docsJson || [];
@@ -72,7 +72,7 @@ export default function BookingPage() {
 
         // B. Fetch Lịch sử (nếu có token)
         if (token) {
-          const histRes = await fetch("http://127.0.0.1:4000/appointments/me", {
+          const histRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/appointments/me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (histRes.ok) {
@@ -101,7 +101,7 @@ export default function BookingPage() {
       }
       try {
         const res = await fetch(
-          `http://127.0.0.1:4000/availabilities/doctors/${selectedDoctorId}?date=${selectedDate}`
+          `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/availabilities/doctors/${selectedDoctorId}?date=${selectedDate}`
         );
         if (res.ok) {
           const json = await res.json();
@@ -154,7 +154,7 @@ export default function BookingPage() {
         return;
       }
 
-      const res = await fetch("http://127.0.0.1:4000/appointments/book", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/appointments/book`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +175,7 @@ export default function BookingPage() {
       toast.success("🎉 Đặt lịch khám thành công!");
       setSelectedSlot(null);
       
-      const histRes = await fetch("http://127.0.0.1:4000/appointments/me", {
+      const histRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/appointments/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (histRes.ok) {

@@ -38,7 +38,7 @@ export default function PatientHistoryPage() {
     try {
       setLoading(true);
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`http://127.0.0.1:4000/appointments/me`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/appointments/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {

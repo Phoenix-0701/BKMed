@@ -35,7 +35,7 @@ export default function DoctorPatientsPage() {
     try {
       setLoading(true);
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`http://127.0.0.1:4000/appointments/doctor-patients`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/appointments/doctor-patients`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {

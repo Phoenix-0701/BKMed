@@ -24,7 +24,7 @@ export default function ExpertSection() {
     async function loadDoctors() {
       try {
         // Gọi API Public của backend NestJS
-        const res = await fetch("http://127.0.0.1:4000/users/public/doctors?limit=4");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/users/public/doctors?limit=4`);
         if (res.ok) {
           const json = await res.json();
           setDoctors(json.data || json);

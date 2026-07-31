@@ -41,7 +41,7 @@ export default function PatientProfilePage() {
     try {
       const token = localStorage.getItem("accessToken");
       if (!token) return;
-      const res = await fetch("http://127.0.0.1:4000/users/me", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/users/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -98,7 +98,7 @@ export default function PatientProfilePage() {
     try {
       setSaving(true);
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("http://127.0.0.1:4000/users/me", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/users/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -147,7 +147,7 @@ export default function PatientProfilePage() {
       
       // 1. Xin Presigned URL từ Backend
       const urlRes = await fetch(
-        `http://127.0.0.1:4000/users/me/avatar-upload-url?fileName=${encodeURIComponent(file.name)}&fileType=${encodeURIComponent(file.type)}`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/users/me/avatar-upload-url?fileName=${encodeURIComponent(file.name)}&fileType=${encodeURIComponent(file.type)}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
@@ -174,7 +174,7 @@ export default function PatientProfilePage() {
       }
       
       // 3. Cập nhật URL mới vào Backend
-      const patchRes = await fetch("http://127.0.0.1:4000/users/me", {
+      const patchRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/users/me`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -209,7 +209,7 @@ export default function PatientProfilePage() {
     try {
       setChangingPassword(true);
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("http://127.0.0.1:4000/auth/change-password", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/auth/change-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

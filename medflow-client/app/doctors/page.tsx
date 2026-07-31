@@ -25,7 +25,7 @@ export default function DoctorsPage() {
   useEffect(() => {
     async function loadTopDoctors() {
       try {
-        const res = await fetch("http://127.0.0.1:4000/users/public/top-doctors");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/users/public/top-doctors`);
         if (res.ok) {
           const json = await res.json();
           setDoctors(json.data || json);

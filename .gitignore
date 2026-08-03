@@ -15,3 +15,5 @@ build/
 *.log
 .env.local
 .env.*.local
+
+medflow-ai/ViMQ_Model/model.pt

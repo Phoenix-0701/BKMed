@@ -225,7 +225,7 @@ async def serve():
     
     server = grpc.aio.server()
     chat_pb2_grpc.add_LangGraphServiceServicer_to_server(LangGraphServicer(chain, chat_model), server)
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port('0.0.0.0:50051')
     
     logger.info("gRPC LangGraph Server đang chạy tại port 50051...")
     await server.start()

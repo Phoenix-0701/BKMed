@@ -23,7 +23,7 @@ app.add_middleware(
 async def grpc_stream_generator(session_id: str, message: str):
     """Mở luồng gRPC và yield dữ liệu chuẩn SSE, có bắt lỗi"""
     try:
-        grpc_host = os.environ.get("GRPC_HOST", "localhost")
+        grpc_host = os.environ.get("GRPC_HOST", "127.0.0.1")
         async with grpc.aio.insecure_channel(f'{grpc_host}:50051') as channel:
             stub = chat_pb2_grpc.LangGraphServiceStub(channel)
             request = chat_pb2.ChatRequest(session_id=session_id, message=message)

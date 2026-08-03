@@ -26,7 +26,7 @@ services:
     dockerContext: medflow-ai
     dockerfilePath: medflow-ai/Dockerfile
     envVars:
-      - key: DATABASE_URL
+      - key: DB_URI
         value: postgresql://postgres.ohqvbfpuvbjsovwfyskk:Siu%401234%40123@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres
       - key: OPENAI_API_KEY
         sync: false

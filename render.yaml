@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: medflow-server
+    env: node
+    buildCommand: cd medflow-server && npm install && npm run build && npx prisma generate
+    startCommand: cd medflow-server && npm run start:prod
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://postgres.ohqvbfpuvbjsovwfyskk:Siu%401234%40123@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true
+      - key: JWT_SECRET
+        value: medflow-secret-key-for-local-demo-only
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      - key: AWS_REGION
+        value: us-east-1
+      - key: PORT
+        value: 4000
+
+  - type: web
+    name: medflow-ai
+    env: docker
+    dockerContext: medflow-ai
+    dockerfilePath: medflow-ai/Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://postgres.ohqvbfpuvbjsovwfyskk:Siu%401234%40123@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: COHERE_API_KEY
+        sync: false
+      - key: LANGFUSE_SECRET_KEY
+        sync: false
+      - key: LANGFUSE_PUBLIC_KEY
+        sync: false
+      - key: LANGFUSE_BASE_URL
+        value: https://cloud.langfuse.com
+      - key: PORT
+        value: 8080

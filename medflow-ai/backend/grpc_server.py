@@ -120,8 +120,13 @@ async def build_rag_chain():
         )
 
     logger.info("[Debug] Khởi tạo Embeddings...")
+    logger.info("   -> Calling get_openai_embeddings()...")
     embeddings = get_openai_embeddings()
+    logger.info("   -> get_openai_embeddings() DONE.")
+    
+    logger.info("   -> Calling ChatOpenAI()...")
     chat_model = ChatOpenAI(model="gpt-4o-mini", temperature=0.1, streaming=True) 
+    logger.info("   -> ChatOpenAI() DONE.")
 
     logger.info("[Debug] Khởi tạo RAG (Bypass AWS Bedrock vì tài khoản bị khóa)...")
     kb_id = os.environ.get("BEDROCK_KNOWLEDGE_BASE_ID", "").strip()

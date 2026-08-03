@@ -1,13 +1,21 @@
 import os
 # os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 import sys
+import asyncio
+import grpc
+import socket
+
+# CỰC KỲ QUAN TRỌNG: Vá lỗi IPv6 bị chặn (blackholed) trên Render khiến httpx bị treo (hang)
+# Ép toàn bộ Python socket chỉ phân giải và kết nối qua IPv4 (AF_INET)
+orig_getaddrinfo = socket.getaddrinfo
+def getaddrinfo_ipv4(host, port, family=0, type=0, proto=0, flags=0):
+    return orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
+socket.getaddrinfo = getaddrinfo_ipv4
 
 # Force UTF-8 output and ensure it doesn't get fully buffered
 if sys.stdout.encoding != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8', line_buffering=True)
 
-import asyncio
-import grpc
 from dotenv import load_dotenv
 load_dotenv()
 import psycopg
@@ -192,37 +200,46 @@ class LangGraphServicer(chat_pb2_grpc.LangGraphServiceServicer):
         user_message = request.message
         logger.info(f"Nhận luồng chat mới - Session: {session_id}")
 
-        from backend.vimq_integration import analyze_query
-        vimq_result = analyze_query(user_message)
-        entities = ", ".join(vimq_result.get("entities", []))
-        if not entities:
-            entities = "Không có"
+        try:
+            langfuse_handler = CallbackHandler()
+            callbacks = [langfuse_handler]
+        except Exception as e:
+            logger.warning(f"Không thể khởi tạo Langfuse (có thể thiếu API key). Bỏ qua tracking: {e}")
+            callbacks = []
 
-        from langchain_core.output_parsers import StrOutputParser
-        
-        # Dùng LLM để phân loại Intent chuẩn xác hơn hardcode
-        intent_chain = router_prompt | self.chat_model | StrOutputParser()
-        intent = await intent_chain.ainvoke({"input": user_message, "vimq_entities": entities})
-        logger.info(f"[IC Router] Classified Intent: {intent}")
+        try:
+            from backend.vimq_integration import analyze_query
+            vimq_result = analyze_query(user_message)
+            entities = ", ".join(vimq_result.get("entities", []))
+            if not entities:
+                entities = "Không có"
 
-        langfuse_handler = CallbackHandler()
+            from langchain_core.output_parsers import StrOutputParser
+            
+            # Dùng LLM để phân loại Intent chuẩn xác hơn hardcode
+            intent_chain = router_prompt | self.chat_model | StrOutputParser()
+            intent = await intent_chain.ainvoke({"input": user_message, "vimq_entities": entities})
+            logger.info(f"[IC Router] Classified Intent: {intent}")
 
-        async for chunk in self.chain.astream(
-            {
-                "input": user_message,
-                "vimq_intent": intent,
-                "vimq_entities": entities
-            },
-            config={
-                "configurable": {"session_id": session_id},
-                "callbacks": [langfuse_handler],
-                "metadata": {"session_id": session_id}
-            }
-        ):
-            # Với cấu trúc create_retrieval_chain, kết quả sinh ra nằm ở key 'answer'
-            if "answer" in chunk:
-                # Bắn token qua gRPC ngay lập tức
-                yield chat_pb2.ChatChunk(token=chunk["answer"])
+            async for chunk in self.chain.astream(
+                {
+                    "input": user_message,
+                    "vimq_intent": intent,
+                    "vimq_entities": entities
+                },
+                config={
+                    "configurable": {"session_id": session_id},
+                    "callbacks": callbacks,
+                    "metadata": {"session_id": session_id}
+                }
+            ):
+                # Với cấu trúc create_retrieval_chain, kết quả sinh ra nằm ở key 'answer'
+                if "answer" in chunk:
+                    # Bắn token qua gRPC ngay lập tức
+                    yield chat_pb2.ChatChunk(token=chunk["answer"])
+        except Exception as e:
+            logger.error(f"Lỗi trong quá trình tạo stream chat: {e}", exc_info=True)
+            yield chat_pb2.ChatChunk(token="\n\n[Lỗi hệ thống AI: Không thể tạo phản hồi. Vui lòng thử lại sau]")
 
 async def serve():
     logger.info("Đang khởi tạo LangChain & Vector DB...")

@@ -77,7 +77,7 @@ if sys.platform == 'win32':
 async def build_rag_chain():
     """Hàm khởi tạo toàn bộ bộ não AI và kết nối Database"""
     logger.info("[Debug] Kết nối Postgres DB...")
-    DB_URI = os.environ.get('DB_URI')
+    DB_URI = os.environ.get('DB_URI', 'postgresql://postgres.ohqvbfpuvbjsovwfyskk:Siu%401234%40123@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres')
     if "keepalives" not in DB_URI:
         separator = "&" if "?" in DB_URI else "?"
         DB_URI += f"{separator}keepalives=1&keepalives_idle=60&keepalives_interval=10&keepalives_count=5"

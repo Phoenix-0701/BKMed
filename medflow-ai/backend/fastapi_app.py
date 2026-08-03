@@ -7,6 +7,10 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 import backend.grpc_protos.chat_pb2 as chat_pb2
 import backend.grpc_protos.chat_pb2_grpc as chat_pb2_grpc
 
@@ -34,8 +38,8 @@ async def grpc_stream_generator(session_id: str, message: str):
                 yield f"data: {encoded_token}\n\n"
     
     except Exception as e:
-        # IN LỖI RA TERMINAL 2 ĐỂ BẠN BIẾT ĐƯỜNG DEBUG
-        print(f"LỖI KẾT NỐI gRPC: {e}") 
+        # IN LỖI RA TERMINAL
+        logger.error(f"LỖI KẾT NỐI gRPC / UNKNOWN: {e}", exc_info=True)
         # Bắn lỗi lên màn hình Chainlit cho user thấy
         yield f"data: [Lỗi hệ thống Backend: Không thể xử lý yêu cầu]\n\n"
             

@@ -225,11 +225,22 @@ async def serve():
     
     server = grpc.aio.server()
     chat_pb2_grpc.add_LangGraphServiceServicer_to_server(LangGraphServicer(chain, chat_model), server)
-    server.add_insecure_port('0.0.0.0:50051')
+    server.add_insecure_port('127.0.0.1:50051')
     
     logger.info("gRPC LangGraph Server đang chạy tại port 50051...")
     await server.start()
     await server.wait_for_termination()
 
 if __name__ == '__main__':
-    asyncio.run(serve())
+    # Fix cho Windows asyncio bug (chỉ có tác dụng nếu chạy trên win)
+    if sys.platform == 'win32':
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        
+    if sys.stdout.encoding != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8', line_buffering=True)
+        
+    try:
+        asyncio.run(serve())
+    except Exception as e:
+        logger.error(f"LỖI CRASH TOÀN SERVER: {e}", exc_info=True)
+        sys.exit(1)

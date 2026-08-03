@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // -----------------------------------------------------------------------------
@@ -38,7 +39,8 @@ enum AppointmentStatus {
 
 model User {
   id        String   @id @default(uuid())
-  cognitoId String   @unique // ID trả về từ AWS Cognito
+  cognitoId String?  @unique // ID trả về từ AWS Cognito (cũ)
+  password  String?  // Thêm mật khẩu cho JWT
   email     String   @unique
   fullName  String
   phone     String?

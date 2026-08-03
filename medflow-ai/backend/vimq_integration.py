@@ -155,7 +155,7 @@ class ViMQInferencer:
 
 # Tạo một singleton instance
 model_dir_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ViMQ_Model")
-vimq_model = ViMQInferencer(model_dir=model_dir_path, use_mock=False)
+vimq_model = ViMQInferencer(model_dir=model_dir_path, use_mock=True)
 
 def analyze_query(query: str) -> Dict[str, Any]:
     return vimq_model.predict(query)

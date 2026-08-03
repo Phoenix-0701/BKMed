@@ -123,13 +123,21 @@ async def build_rag_chain():
     embeddings = get_openai_embeddings()
     chat_model = ChatOpenAI(model="gpt-4o-mini", temperature=0.1, streaming=True) 
 
-    logger.info("[Debug] Khởi tạo RAG với AWS Bedrock Knowledge Bases (S3 Vector Store)...")
+    logger.info("[Debug] Khởi tạo RAG (Bypass AWS Bedrock vì tài khoản bị khóa)...")
     kb_id = os.environ.get("BEDROCK_KNOWLEDGE_BASE_ID", "").strip()
-    if not kb_id:
-        logger.warning("[Warning] BEDROCK_KNOWLEDGE_BASE_ID chưa được thiết lập trong .env!")
-    base_retriever = AmazonKnowledgeBasesRetriever(
-        knowledge_base_id=kb_id or "DUMMY_KB_ID"
-    )
+    
+    # Tạo Dummy Retriever để thay thế AWS Bedrock Retriever
+    from langchain_core.retrievers import BaseRetriever
+    from langchain_core.documents import Document
+    from pydantic import Field
+    from typing import List
+    from langchain_core.callbacks import CallbackManagerForRetrieverRun
+    
+    class DummyRetriever(BaseRetriever):
+        def _get_relevant_documents(self, query: str, *, run_manager: CallbackManagerForRetrieverRun) -> List[Document]:
+            return [Document(page_content="Đây là môi trường Demo (AWS đang bị vô hiệu hóa), không có dữ liệu RAG nội bộ.")]
+            
+    base_retriever = DummyRetriever()
 
     logger.info("[Debug] Khởi tạo Cohere Rerank...")
     cohere_rerank = CohereRerank(cohere_api_key=os.environ.get('COHERE_API_KEY'), model="rerank-multilingual-v3.0", top_n=3)

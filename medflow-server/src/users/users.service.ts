@@ -1,7 +1,5 @@
 import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Role } from '@prisma/client';
 
@@ -86,37 +84,15 @@ export class UsersService {
     return this.getProfile(userId, role);
   }
 
-  // --- HỖ TRỢ UPLOAD ẢNH QUA AWS S3 ---
+  // --- HỖ TRỢ UPLOAD ẢNH QUA API LOCAL ---
   async getPresignedUrl(userId: string, fileName: string, fileType: string) {
-    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY || (!process.env.AWS_S3_BUCKET_NAME && !process.env.AWS_BUCKET_NAME)) {
-      throw new InternalServerErrorException('Cấu hình AWS S3 chưa hoàn tất trên máy chủ.');
-    }
-
-    const s3Client = new S3Client({
-      region: process.env.AWS_REGION || 'ap-southeast-2',
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      },
-    });
-
-    const bucketName = process.env.AWS_S3_BUCKET_NAME || process.env.AWS_BUCKET_NAME;
-    // Đảm bảo tên file an toàn
     const safeFileName = fileName.replace(/[^a-zA-Z0-9.\-]/g, '_');
     const key = `avatars/${userId}-${Date.now()}-${safeFileName}`;
-
-    const command = new PutObjectCommand({
-      Bucket: bucketName,
-      Key: key,
-      ContentType: fileType,
-    });
-
-    // Tạo URL có thời hạn 5 phút (300 giây)
-    const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 });
+    const serverUrl = process.env.API_URL || 'http://127.0.0.1:4000';
 
     return {
-      uploadUrl,
-      objectUrl: `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`,
+      uploadUrl: `${serverUrl}/users/me/upload-avatar?fileName=${encodeURIComponent(key)}`,
+      objectUrl: `${serverUrl}/public/${key}`,
     };
   }
 

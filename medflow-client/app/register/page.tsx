@@ -39,16 +39,46 @@ export default function RegisterPage() {
         throw new Error(result.message || "Không thể đăng ký tài khoản.");
       }
 
-      setRegisteredEmail(data.email);
-      setSuccess("Đăng ký thành công! Vui lòng kiểm tra email để nhận mã OTP.");
-      setStep("VERIFY_OTP");
+      setSuccess("Đăng ký thành công! Đang tự động đăng nhập...");
+
+      // 2. Tự động đăng nhập
+      const loginRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000"}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+      
+      const rawLogin = await loginRes.json();
+      const resultLogin = rawLogin.data || rawLogin;
+
+      if (!loginRes.ok) {
+        // Nếu tự động login thất bại thì chuyển về trang login
+        setTimeout(() => router.push("/login"), 1500);
+        return;
+      }
+
+      localStorage.setItem("accessToken", resultLogin.accessToken);
+      if (resultLogin.user) {
+        localStorage.setItem("user", JSON.stringify(resultLogin.user));
+      }
+
+      const userRole = resultLogin.user?.role;
+      if (userRole === "ADMIN") {
+        router.push("/admin/doctors");
+      } else if (userRole === "DOCTOR") {
+        router.push("/doctor");
+      } else {
+        router.push("/patient");
+      }
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
         setError("Không thể kết nối đến máy chủ.");
       }
-    } finally {
       setLoading(false);
     }
   };

@@ -2,12 +2,16 @@ import {
   Controller,
   Get,
   Patch,
+  Put,
   Body,
   UseGuards,
   Param,
   Query,
+  Req,
   ForbiddenException,
 } from '@nestjs/common';
+import * as fs from 'fs';
+import * as path from 'path';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -70,6 +74,33 @@ export class UsersController {
       return { error: 'Vui lòng cung cấp fileName và fileType' };
     }
     return this.usersService.getPresignedUrl(user.id, fileName, fileType);
+  }
+
+  // --- API XỬ LÝ UPLOAD TRỰC TIẾP LÊN SERVER (Thay cho S3) ---
+  @Put('me/upload-avatar')
+  async uploadAvatarRaw(@Req() req: any, @Query('fileName') fileName: string) {
+    // fileName đã được truyền ở dạng: avatars/userId-timestamp-name.jpg
+    const safeFileName = fileName || `avatars/unknown-${Date.now()}.jpg`;
+    const uploadDir = path.join(process.cwd(), 'public');
+    
+    // Đảm bảo thư mục public/avatars tồn tại
+    const targetDir = path.join(uploadDir, path.dirname(safeFileName));
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+
+    const filePath = path.join(uploadDir, safeFileName);
+
+    return new Promise((resolve, reject) => {
+      const writeStream = fs.createWriteStream(filePath);
+      req.pipe(writeStream);
+      req.on('end', () => {
+        resolve({ message: 'Upload thành công' });
+      });
+      req.on('error', (err: any) => {
+        reject(err);
+      });
+    });
   }
 
   // ==========================================

@@ -16,6 +16,8 @@ services:
         value: us-east-1
       - key: PORT
         value: 4000
+      - key: GIT_LFS_SKIP_SMUDGE
+        value: "1"
 
   - type: web
     name: medflow-ai
@@ -38,3 +40,5 @@ services:
         value: https://cloud.langfuse.com
       - key: PORT
         value: 8080
+      - key: GIT_LFS_SKIP_SMUDGE
+        value: "1"

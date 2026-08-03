@@ -33,7 +33,7 @@ async def grpc_stream_generator(session_id: str, message: str):
             request = chat_pb2.ChatRequest(session_id=session_id, message=message)
             
             import json
-            async for chunk in stub.StreamChat(request):
+            async for chunk in stub.StreamChat(request, wait_for_ready=True, timeout=60.0):
                 encoded_token = json.dumps(chunk.token)
                 yield f"data: {encoded_token}\n\n"
     

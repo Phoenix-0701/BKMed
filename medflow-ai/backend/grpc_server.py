@@ -230,9 +230,17 @@ async def serve():
     
     server = grpc.aio.server()
     chat_pb2_grpc.add_LangGraphServiceServicer_to_server(LangGraphServicer(chain, chat_model), server)
-    server.add_insecure_port('127.0.0.1:50051')
     
-    logger.info("gRPC LangGraph Server đang chạy tại port 50051...")
+    if sys.platform == 'win32':
+        server.add_insecure_port('127.0.0.1:50051')
+        logger.info("gRPC LangGraph Server đang chạy tại port 50051 (TCP)...")
+    else:
+        socket_path = '/tmp/grpc_medflow.sock'
+        if os.path.exists(socket_path):
+            os.remove(socket_path)
+        server.add_insecure_port(f'unix://{socket_path}')
+        logger.info(f"gRPC LangGraph Server đang chạy tại {socket_path} (Unix Socket)...")
+        
     await server.start()
     await server.wait_for_termination()
 

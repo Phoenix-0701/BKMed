@@ -1,8 +1,8 @@
 import os
 import sys
-import torch
+# import torch
 import json
-import numpy as np
+# import numpy as np
 
 # os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 
@@ -11,7 +11,7 @@ from typing import Dict, Any, List
 # Cấu hình path để import code từ thư mục src của ViMQ
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
-from utils import load_tokenizer, MODEL_CLASSES, get_entity_label
+# from utils import load_tokenizer, MODEL_CLASSES, get_entity_label
 
 class ViMQInferencer:
     def __init__(self, model_dir: str = None, use_mock: bool = False):

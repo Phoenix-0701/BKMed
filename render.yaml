@@ -1,6 +1,7 @@
 services:
   - type: web
     name: medflow-server
+    plan: free
     env: node
     buildCommand: cd medflow-server && npm install && npm run build && npx prisma generate
     startCommand: cd medflow-server && npm run start:prod
@@ -18,6 +19,7 @@ services:
 
   - type: web
     name: medflow-ai
+    plan: free
     env: docker
     dockerContext: medflow-ai
     dockerfilePath: medflow-ai/Dockerfile

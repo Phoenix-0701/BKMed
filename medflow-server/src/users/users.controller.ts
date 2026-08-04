@@ -9,8 +9,7 @@ import {
   Query,
   Req,
   ForbiddenException,
-import * as fs from 'fs';
-import * as path from 'path';
+} from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UseInterceptors, UploadedFile } from '@nestjs/common';
@@ -19,10 +18,11 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User, Role } from '@prisma/client';
+import type { Express } from 'express';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   // ==========================================
   // NHÓM PUBLIC API (Không cần đăng nhập)
@@ -93,17 +93,17 @@ export class UsersController {
     }
 
     const safeFileName = fileName || `avatars/unknown-${Date.now()}`;
-    
+
     // Cấu hình Cloudinary
-    cloudinary.config({ 
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-      api_key: process.env.CLOUDINARY_API_KEY, 
-      api_secret: process.env.CLOUDINARY_API_SECRET 
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET
     });
 
     return new Promise((resolve, reject) => {
       const cloudinaryStream = cloudinary.uploader.upload_stream(
-        { 
+        {
           public_id: safeFileName,
           resource_type: 'auto',
           overwrite: true
@@ -125,7 +125,7 @@ export class UsersController {
   // ==========================================
   // API QUẢN LÝ BỆNH NHÂN (Dành cho Bác sĩ)
   // ==========================================
-  
+
   @UseGuards(JwtAuthGuard)
   @Get('patients/:id')
   getPatientDetails(@CurrentUser() user: User, @Param('id') patientId: string) {
@@ -138,8 +138,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Patch('patients/:id')
   updatePatientStats(
-    @CurrentUser() user: User, 
-    @Param('id') patientId: string, 
+    @CurrentUser() user: User,
+    @Param('id') patientId: string,
     @Body() body: { weight?: number; height?: number; bloodType?: string }
   ) {
     if (user.role !== Role.DOCTOR) {

@@ -86,15 +86,24 @@ export class UsersService {
 
   // --- HỖ TRỢ UPLOAD ẢNH QUA API LOCAL ---
   async getPresignedUrl(userId: string, fileName: string, fileType: string, dynamicServerUrl?: string) {
-    const safeFileName = fileName.replace(/[^a-zA-Z0-9.\-]/g, '_');
-    // Bỏ phần mở rộng ra khỏi public_id nếu muốn, hoặc cứ để nguyên
+    const lastDotIndex = fileName.lastIndexOf('.');
+    let nameWithoutExt = fileName;
+    let ext = '';
+    
+    if (lastDotIndex !== -1) {
+      nameWithoutExt = fileName.substring(0, lastDotIndex);
+      ext = fileName.substring(lastDotIndex);
+    }
+    
+    const safeFileName = nameWithoutExt.replace(/[^a-zA-Z0-9.\-]/g, '_');
+    // Bỏ phần mở rộng ra khỏi public_id để tránh Cloudinary thêm trùng lặp (.png.png)
     const key = `avatars/${userId}-${Date.now()}-${safeFileName}`;
     const serverUrl = dynamicServerUrl || process.env.API_URL || 'http://127.0.0.1:4000';
     const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
 
     return {
       uploadUrl: `${serverUrl}/users/me/upload-avatar?fileName=${encodeURIComponent(key)}`,
-      objectUrl: `https://res.cloudinary.com/${cloudName}/image/upload/${key}`,
+      objectUrl: `https://res.cloudinary.com/${cloudName}/image/upload/${key}${ext}`,
     };
   }
 

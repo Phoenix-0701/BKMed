@@ -17,6 +17,9 @@ COPY . .
 ENV TIKTOKEN_CACHE_DIR=/app/tiktoken_cache
 RUN mkdir -p /app/tiktoken_cache && python -c "import tiktoken; tiktoken.get_encoding('cl100k_base'); tiktoken.get_encoding('o200k_base')"
 
+# Regenerate gRPC python files to ensure protobuf version matches the installed runtime
+RUN python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. backend/grpc_protos/chat.proto
+
 RUN chmod +x start.sh
 
 EXPOSE 8080 50051

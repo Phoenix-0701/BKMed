@@ -18,7 +18,8 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User, Role } from '@prisma/client';
-import type { Express } from 'express';
+
+
 
 @Controller('users')
 export class UsersController {
@@ -87,11 +88,11 @@ export class UsersController {
   // --- API XỬ LÝ UPLOAD TRỰC TIẾP LÊN CLOUDINARY ---
   @Put('me/upload-avatar')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadAvatarRaw(@UploadedFile() file: Express.Multer.File, @Query('fileName') fileName: string) {
-    if (!file) {
-      throw new ForbiddenException('Không tìm thấy file upload');
-    }
-
+  async uploadAvatarRaw(
+    @UploadedFile() file: Express.Multer.File, 
+    @Query('fileName') fileName: string,
+    @Req() req: any
+  ) {
     const safeFileName = fileName || `avatars/unknown-${Date.now()}`;
 
     // Cấu hình Cloudinary
@@ -117,8 +118,13 @@ export class UsersController {
         }
       );
 
-      // Đẩy buffer của file vào stream của Cloudinary
-      cloudinaryStream.end(file.buffer);
+      if (file && file.buffer) {
+        // Cách 1: Chạy code mới (Multer / FormData)
+        cloudinaryStream.end(file.buffer);
+      } else {
+        // Cách 2: Chạy code cũ (Fallback nếu frontend chưa kịp update bộ nhớ đệm Cache)
+        req.pipe(cloudinaryStream);
+      }
     });
   }
 

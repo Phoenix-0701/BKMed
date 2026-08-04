@@ -52,29 +52,31 @@ if os.environ.get("AWS_ACCESS_KEY_ID"):
 else:
     logger.addHandler(logging.StreamHandler())
 
-# LangChain Core & Models
-from langchain_openai import ChatOpenAI
-from langchain.chains import create_retrieval_chain, create_history_aware_retriever
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_postgres import PostgresChatMessageHistory
+# --- TẠM THỜI VÔ HIỆU HÓA LANGCHAIN ĐỂ TIẾT KIỆM RAM TRÊN RENDER ---
+# from langchain_openai import ChatOpenAI
+# from langchain.chains import create_retrieval_chain, create_history_aware_retriever
+# from langchain.chains.combine_documents import create_stuff_documents_chain
+# from langchain_core.runnables.history import RunnableWithMessageHistory
+# from langchain_postgres import PostgresChatMessageHistory
+#
+# from langchain_aws import AmazonKnowledgeBasesRetriever
+# from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
+# from langchain_cohere import CohereRerank
+# from langfuse.langchain import CallbackHandler
+#
+# from backend.helper import get_openai_embeddings
+# from backend.prompt import (
+#     contextualize_q_prompt, 
+#     router_prompt, 
+#     treatment_prompt, 
+#     cause_prompt, 
+#     severity_prompt, 
+#     diagnosis_prompt, 
+#     other_prompt,
+#     booking_prompt
+# )
 
-from langchain_aws import AmazonKnowledgeBasesRetriever
-from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
-from langchain_cohere import CohereRerank
-from langfuse.langchain import CallbackHandler
-
-from backend.helper import get_openai_embeddings
-from backend.prompt import (
-    contextualize_q_prompt, 
-    router_prompt, 
-    treatment_prompt, 
-    cause_prompt, 
-    severity_prompt, 
-    diagnosis_prompt, 
-    other_prompt,
-    booking_prompt
-)
+import google.generativeai as genai
 
 load_dotenv()
 
@@ -82,171 +84,49 @@ load_dotenv()
 if sys.platform == 'win32':
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-async def build_rag_chain():
-    """Hàm khởi tạo toàn bộ bộ não AI và kết nối Database"""
-    logger.info("[Debug] Kết nối Postgres DB...")
-    DB_URI = os.environ.get('DB_URI', 'postgresql://postgres.ohqvbfpuvbjsovwfyskk:Siu%401234%40123@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres')
-    if "keepalives" not in DB_URI:
-        separator = "&" if "?" in DB_URI else "?"
-        DB_URI += f"{separator}keepalives=1&keepalives_idle=60&keepalives_interval=10&keepalives_count=5"
-        
-    async_connection = await psycopg.AsyncConnection.connect(DB_URI, autocommit=True)
-    
-    class SafePostgresChatMessageHistory(PostgresChatMessageHistory):
-        async def _ensure_connection(self):
-            if self._aconnection.closed:
-                logger.warning("Connection closed. Reconnecting...")
-                self._aconnection = await psycopg.AsyncConnection.connect(DB_URI, autocommit=True)
-
-        async def aget_messages(self):
-            try:
-                await self._ensure_connection()
-                return await super().aget_messages()
-            except psycopg.OperationalError:
-                logger.warning("OperationalError on get. Reconnecting...")
-                self._aconnection = await psycopg.AsyncConnection.connect(DB_URI, autocommit=True)
-                return await super().aget_messages()
-                
-        async def aadd_messages(self, messages):
-            try:
-                await self._ensure_connection()
-                return await super().aadd_messages(messages)
-            except psycopg.OperationalError:
-                logger.warning("OperationalError on add. Reconnecting...")
-                self._aconnection = await psycopg.AsyncConnection.connect(DB_URI, autocommit=True)
-                return await super().aadd_messages(messages)
-
-    # Tạo bảng nếu chưa có
-    logger.info("[Debug] Tạo bảng chat_history...")
-    await SafePostgresChatMessageHistory.acreate_tables(async_connection, "chat_history")
-
-    def get_session_history(session_id: str):
-        return SafePostgresChatMessageHistory(
-            "chat_history", 
-            session_id, 
-            async_connection=async_connection
-        )
-
-    logger.info("[Debug] Khởi tạo Embeddings...")
-    logger.info("   -> Calling get_openai_embeddings()...")
-    embeddings = get_openai_embeddings()
-    logger.info("   -> get_openai_embeddings() DONE.")
-    
-    logger.info("   -> Calling ChatOpenAI()...")
-    chat_model = ChatOpenAI(model="gpt-4o-mini", temperature=0.1, streaming=True) 
-    logger.info("   -> ChatOpenAI() DONE.")
-
-    logger.info("[Debug] Khởi tạo RAG (Bypass AWS Bedrock vì tài khoản bị khóa)...")
-    kb_id = os.environ.get("BEDROCK_KNOWLEDGE_BASE_ID", "").strip()
-    
-    # Tạo Dummy Retriever để thay thế AWS Bedrock Retriever
-    from langchain_core.retrievers import BaseRetriever
-    from langchain_core.documents import Document
-    from pydantic import Field
-    from typing import List
-    from langchain_core.callbacks import CallbackManagerForRetrieverRun
-    
-    class DummyRetriever(BaseRetriever):
-        def _get_relevant_documents(self, query: str, *, run_manager: CallbackManagerForRetrieverRun) -> List[Document]:
-            return [Document(page_content="Đây là môi trường Demo (AWS đang bị vô hiệu hóa), không có dữ liệu RAG nội bộ.")]
-            
-    base_retriever = DummyRetriever()
-
-    logger.info("[Debug] Khởi tạo Cohere Rerank...")
-    cohere_rerank = CohereRerank(cohere_api_key=os.environ.get('COHERE_API_KEY'), model="rerank-multilingual-v3.0", top_n=3)
-    compression_retriever = ContextualCompressionRetriever(base_compressor=cohere_rerank, base_retriever=base_retriever)
-
-    from langchain_core.output_parsers import StrOutputParser
-    from langchain_core.runnables import RunnableBranch
-
-    history_aware_retriever = contextualize_q_prompt | chat_model | StrOutputParser() | compression_retriever
-    
-    treatment_chain = create_stuff_documents_chain(chat_model, treatment_prompt)
-    cause_chain = create_stuff_documents_chain(chat_model, cause_prompt)
-    severity_chain = create_stuff_documents_chain(chat_model, severity_prompt)
-    diagnosis_chain = create_stuff_documents_chain(chat_model, diagnosis_prompt)
-    booking_chain = create_stuff_documents_chain(chat_model, booking_prompt)
-    other_chain = create_stuff_documents_chain(chat_model, other_prompt)
-
-    question_answer_chain = RunnableBranch(
-        (lambda x: "BOOKING" in x.get("vimq_intent", "").upper(), booking_chain),
-        (lambda x: "TREATMENT" in x.get("vimq_intent", "").upper(), treatment_chain),
-        (lambda x: "CAUSE" in x.get("vimq_intent", "").upper(), cause_chain),
-        (lambda x: "SEVERITY" in x.get("vimq_intent", "").upper(), severity_chain),
-        (lambda x: "DIAGNOSIS" in x.get("vimq_intent", "").upper(), diagnosis_chain),
-        other_chain
-    )
-    
-    rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-
-    conversational_rag_chain = RunnableWithMessageHistory(
-        rag_chain,
-        get_session_history,
-        input_messages_key="input",
-        history_messages_key="chat_history",
-        output_messages_key="answer",
-    )
-    return conversational_rag_chain, chat_model
+# async def build_rag_chain():
+#     """Hàm khởi tạo toàn bộ bộ não AI và kết nối Database"""
+#     ... (đã bị vô hiệu hóa để giải phóng RAM)
+#     return conversational_rag_chain, chat_model
 
 
 class LangGraphServicer(chat_pb2_grpc.LangGraphServiceServicer):
-    def __init__(self, chain, chat_model):
-        self.chain = chain
-        self.chat_model = chat_model
+    def __init__(self):
+        gemini_api_key = os.environ.get("GEMINI_API_KEY")
+        if gemini_api_key:
+            genai.configure(api_key=gemini_api_key)
+            self.model = genai.GenerativeModel(
+                'gemini-1.5-flash',
+                system_instruction="Bạn là trợ lý y tế ảo của phòng khám BKMed. Hãy trả lời ngắn gọn, súc tích, chính xác và có tính chuyên môn y khoa. Trả lời bằng tiếng Việt."
+            )
+        else:
+            self.model = None
 
     async def StreamChat(self, request, context):
-        """Nhận request từ FastAPI và stream từng token trả về"""
+        """Nhận request từ FastAPI và stream từng token trả về qua Gemini"""
         session_id = request.session_id
         user_message = request.message
         logger.info(f"Nhận luồng chat mới - Session: {session_id}")
 
-        try:
-            langfuse_handler = CallbackHandler()
-            callbacks = [langfuse_handler]
-        except Exception as e:
-            logger.warning(f"Không thể khởi tạo Langfuse (có thể thiếu API key). Bỏ qua tracking: {e}")
-            callbacks = []
+        if not self.model:
+            yield chat_pb2.ChatChunk(token="[Lỗi: Chưa cấu hình GEMINI_API_KEY. Vui lòng thêm GEMINI_API_KEY vào biến môi trường.]")
+            return
 
         try:
-            from backend.vimq_integration import analyze_query
-            vimq_result = analyze_query(user_message)
-            entities = ", ".join(vimq_result.get("entities", []))
-            if not entities:
-                entities = "Không có"
-
-            from langchain_core.output_parsers import StrOutputParser
-            
-            # Dùng LLM để phân loại Intent chuẩn xác hơn hardcode
-            intent_chain = router_prompt | self.chat_model | StrOutputParser()
-            intent = await intent_chain.ainvoke({"input": user_message, "vimq_entities": entities})
-            logger.info(f"[IC Router] Classified Intent: {intent}")
-
-            async for chunk in self.chain.astream(
-                {
-                    "input": user_message,
-                    "vimq_intent": intent,
-                    "vimq_entities": entities
-                },
-                config={
-                    "configurable": {"session_id": session_id},
-                    "callbacks": callbacks,
-                    "metadata": {"session_id": session_id}
-                }
-            ):
-                # Với cấu trúc create_retrieval_chain, kết quả sinh ra nằm ở key 'answer'
-                if "answer" in chunk:
-                    # Bắn token qua gRPC ngay lập tức
-                    yield chat_pb2.ChatChunk(token=chunk["answer"])
+            logger.info("Đang gọi Google Gemini API...")
+            response = await self.model.generate_content_async(user_message, stream=True)
+            async for chunk in response:
+                if chunk.text:
+                    yield chat_pb2.ChatChunk(token=chunk.text)
         except Exception as e:
-            logger.error(f"Lỗi trong quá trình tạo stream chat: {e}", exc_info=True)
+            logger.error(f"Lỗi trong quá trình tạo stream chat Gemini: {e}", exc_info=True)
             yield chat_pb2.ChatChunk(token="\n\n[Lỗi hệ thống AI: Không thể tạo phản hồi. Vui lòng thử lại sau]")
 
 async def serve():
-    logger.info("Đang khởi tạo LangChain & Vector DB...")
-    chain, chat_model = await build_rag_chain()
+    logger.info("Đang khởi tạo gRPC Server (Chế độ Bypass chạy Gemini API)...")
     
     server = grpc.aio.server()
-    chat_pb2_grpc.add_LangGraphServiceServicer_to_server(LangGraphServicer(chain, chat_model), server)
+    chat_pb2_grpc.add_LangGraphServiceServicer_to_server(LangGraphServicer(), server)
     
     if sys.platform == 'win32':
         server.add_insecure_port('127.0.0.1:50051')

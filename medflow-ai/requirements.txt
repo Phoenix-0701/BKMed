@@ -21,8 +21,9 @@ langchain-postgres
 # --- Data Processing & Models ---
 tiktoken==0.8.0
 pypdf==5.6.1
-sentence-transformers==4.1.0
+# sentence-transformers==4.1.0
 pyreadline3==3.5.6  # Fix readline error on Windows
+google-generativeai
 
 # --- Observability / Tracing ---
 langfuse

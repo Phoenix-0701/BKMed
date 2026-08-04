@@ -96,7 +96,7 @@ class LangGraphServicer(chat_pb2_grpc.LangGraphServiceServicer):
         if gemini_api_key:
             genai.configure(api_key=gemini_api_key)
             self.model = genai.GenerativeModel(
-                'gemini-3.5-flash',
+                'gemini-1.5-flash',
                 system_instruction="Bạn là trợ lý y tế ảo của phòng khám BKMed. Hãy trả lời ngắn gọn, súc tích, chính xác và có tính chuyên môn y khoa. Trả lời bằng tiếng Việt."
             )
         else:

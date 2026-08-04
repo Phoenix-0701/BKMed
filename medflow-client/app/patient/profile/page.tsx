@@ -158,13 +158,14 @@ export default function PatientProfilePage() {
       const json = await urlRes.json();
       const { uploadUrl, objectUrl } = json.data || json;
 
-      // 2. Upload file trực tiếp lên S3
+      // 2. Upload file trực tiếp lên mây qua Backend bằng FormData
+      const formData = new FormData();
+      formData.append("file", file);
+
       const uploadRes = await fetch(uploadUrl, {
         method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type,
-        },
+        body: formData,
+        // Không truyền Content-Type, trình duyệt sẽ tự động thêm multipart/form-data cùng với boundary
       });
 
       if (!uploadRes.ok) {

@@ -41,10 +41,12 @@ export default function EditDoctorModal({ doctor, onClose, onSave }: EditDoctorM
       const rawRes = await res.json();
       const { uploadUrl, objectUrl } = rawRes.data || rawRes;
       
+      const formData = new FormData();
+      formData.append("file", file);
+
       const uploadRes = await fetch(uploadUrl, {
         method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file
+        body: formData
       });
       
       if (!uploadRes.ok) throw new Error("Lỗi upload ảnh");

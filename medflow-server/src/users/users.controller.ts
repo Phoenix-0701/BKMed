@@ -9,10 +9,11 @@ import {
   Query,
   Req,
   ForbiddenException,
-} from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import { v2 as cloudinary } from 'cloudinary';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -85,11 +86,15 @@ export class UsersController {
 
   // --- API XỬ LÝ UPLOAD TRỰC TIẾP LÊN CLOUDINARY ---
   @Put('me/upload-avatar')
-  async uploadAvatarRaw(@Req() req: any, @Query('fileName') fileName: string) {
-    // fileName đã được truyền ở dạng: avatars/userId-timestamp-name.jpg
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatarRaw(@UploadedFile() file: Express.Multer.File, @Query('fileName') fileName: string) {
+    if (!file) {
+      throw new ForbiddenException('Không tìm thấy file upload');
+    }
+
     const safeFileName = fileName || `avatars/unknown-${Date.now()}`;
     
-    // Cấu hình Cloudinary (Mặc dù có trong .env, ta cấu hình lại cho chắc chắn)
+    // Cấu hình Cloudinary
     cloudinary.config({ 
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
       api_key: process.env.CLOUDINARY_API_KEY, 
@@ -97,7 +102,6 @@ export class UsersController {
     });
 
     return new Promise((resolve, reject) => {
-      // Tạo một WriteStream của Cloudinary
       const cloudinaryStream = cloudinary.uploader.upload_stream(
         { 
           public_id: safeFileName,
@@ -113,8 +117,8 @@ export class UsersController {
         }
       );
 
-      // Pipe luồng dữ liệu (stream) từ request trực tiếp sang Cloudinary
-      req.pipe(cloudinaryStream);
+      // Đẩy buffer của file vào stream của Cloudinary
+      cloudinaryStream.end(file.buffer);
     });
   }
 

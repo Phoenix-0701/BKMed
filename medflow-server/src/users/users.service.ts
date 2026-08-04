@@ -85,11 +85,11 @@ export class UsersService {
   }
 
   // --- HỖ TRỢ UPLOAD ẢNH QUA API LOCAL ---
-  async getPresignedUrl(userId: string, fileName: string, fileType: string) {
+  async getPresignedUrl(userId: string, fileName: string, fileType: string, dynamicServerUrl?: string) {
     const safeFileName = fileName.replace(/[^a-zA-Z0-9.\-]/g, '_');
     // Bỏ phần mở rộng ra khỏi public_id nếu muốn, hoặc cứ để nguyên
     const key = `avatars/${userId}-${Date.now()}-${safeFileName}`;
-    const serverUrl = process.env.API_URL || 'http://127.0.0.1:4000';
+    const serverUrl = dynamicServerUrl || process.env.API_URL || 'http://127.0.0.1:4000';
     const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
 
     return {

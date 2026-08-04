@@ -70,11 +70,17 @@ export class UsersController {
     @CurrentUser() user: User,
     @Query('fileName') fileName: string,
     @Query('fileType') fileType: string,
+    @Req() req: any
   ) {
     if (!fileName || !fileType) {
       return { error: 'Vui lòng cung cấp fileName và fileType' };
     }
-    return this.usersService.getPresignedUrl(user.id, fileName, fileType);
+    // Lấy host và protocol động từ Request để tránh lỗi URL khi deploy lên Render
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'http';
+    const host = req.headers.host || '127.0.0.1:4000';
+    const dynamicServerUrl = `${protocol}://${host}`;
+
+    return this.usersService.getPresignedUrl(user.id, fileName, fileType, dynamicServerUrl);
   }
 
   // --- API XỬ LÝ UPLOAD TRỰC TIẾP LÊN CLOUDINARY ---

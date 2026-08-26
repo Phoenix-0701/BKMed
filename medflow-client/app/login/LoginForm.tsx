@@ -47,7 +47,7 @@ export default function LoginForm({ onSubmit, loading, error }: LoginFormProps) 
               placeholder="patient@example.com"
               value={formData.emailOrPhone}
               onChange={(e) => setFormData({ ...formData, emailOrPhone: e.target.value })}
-              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-4 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-white dark:focus:border-blue-500 dark:focus:bg-zinc-900 dark:focus:ring-blue-500/20 min-h-[44px] transition-all duration-300"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-4 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-white dark:focus:border-blue-500 dark:focus:bg-zinc-900 dark:focus:ring-blue-500/20 dark:[&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_30px_#27272a_inset] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white] min-h-[44px] transition-all duration-300"
             />
           </div>
         </div>
@@ -73,7 +73,7 @@ export default function LoginForm({ onSubmit, loading, error }: LoginFormProps) 
               placeholder="**********"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-10 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-white dark:focus:border-blue-500 dark:focus:bg-zinc-900 dark:focus:ring-blue-500/20 min-h-[44px] transition-all duration-300"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-10 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-white dark:focus:border-blue-500 dark:focus:bg-zinc-900 dark:focus:ring-blue-500/20 dark:[&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_30px_#27272a_inset] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white] min-h-[44px] transition-all duration-300"
             />
             <button
               type="button"

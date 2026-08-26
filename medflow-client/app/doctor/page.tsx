@@ -103,7 +103,7 @@ export default function DoctorSchedulePage() {
         <div className="flex items-center gap-3">
           <button
             onClick={fetchSchedule}
-            className="flex items-center gap-2 rounded-xl bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 transition-colors"
+            className="flex items-center gap-2 rounded-xl bg-gray-100 dark:bg-zinc-800 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
             Lọc
@@ -119,46 +119,46 @@ export default function DoctorSchedulePage() {
 
       {/* 3 Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm flex flex-col justify-between">
+        <div className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm flex flex-col justify-between transition-colors">
           <div className="relative z-10">
-            <p className="text-sm font-semibold text-gray-500">
+            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
               Tổng số lịch hẹn
             </p>
-            <h3 className="text-5xl font-black text-blue-700 mt-3 tracking-tighter">
+            <h3 className="text-5xl font-black text-blue-700 dark:text-blue-400 mt-3 tracking-tighter">
               {totalCount}
             </h3>
           </div>
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-blue-50/50" />
+          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-blue-50/50 dark:bg-blue-900/10" />
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm flex flex-col justify-between">
+        <div className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm flex flex-col justify-between transition-colors">
           <div className="relative z-10">
-            <p className="text-sm font-semibold text-gray-500">
+            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
               Chờ khám
             </p>
-            <h3 className="text-5xl font-black text-emerald-600 mt-3 tracking-tighter">
+            <h3 className="text-5xl font-black text-emerald-600 dark:text-emerald-400 mt-3 tracking-tighter">
               {waitingCount}
             </h3>
           </div>
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-emerald-50/50" />
+          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-emerald-50/50 dark:bg-emerald-900/10" />
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm flex flex-col justify-between">
+        <div className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm flex flex-col justify-between transition-colors">
           <div className="relative z-10">
-            <p className="text-sm font-semibold text-gray-500">
+            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
               Lịch hẹn trong ngày
             </p>
-            <h3 className="text-5xl font-black text-rose-600 mt-3 tracking-tighter">
+            <h3 className="text-5xl font-black text-rose-600 dark:text-rose-400 mt-3 tracking-tighter">
               {todayCount}
             </h3>
           </div>
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-rose-50/50" />
+          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-rose-50/50 dark:bg-rose-900/10" />
         </div>
       </div>
 
       {/* Appointments Table */}
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden mt-2">
-        <div className="grid grid-cols-12 bg-gray-50/50 px-6 py-4 text-xs font-bold text-gray-500 border-b border-gray-100">
+      <div className="rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden mt-2 transition-colors">
+        <div className="grid grid-cols-12 bg-gray-50/50 dark:bg-zinc-800/50 px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-zinc-800 transition-colors">
           <div className="col-span-2">Giờ</div>
           <div className="col-span-3">Bệnh nhân</div>
           <div className="col-span-4">Thông tin</div>
@@ -167,15 +167,15 @@ export default function DoctorSchedulePage() {
         </div>
 
         {loading ? (
-          <div className="p-8 text-center text-xs text-gray-500">
+          <div className="p-8 text-center text-xs text-gray-500 dark:text-gray-400">
             Đang tải dữ liệu ca khám từ Server...
           </div>
         ) : appointments.length === 0 ? (
-          <div className="p-12 text-center text-sm font-medium text-gray-400">
+          <div className="p-12 text-center text-sm font-medium text-gray-400 dark:text-gray-500">
             Hôm nay không có lịch hẹn khám nào.
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-100 dark:divide-zinc-800 transition-colors">
             {appointments.map((item) => {
               const fullName = item.patient?.user?.fullName || "Bệnh nhân";
               const patientInitials = fullName.split(" ").slice(-2).map((n) => n[0]).join("");
@@ -184,13 +184,13 @@ export default function DoctorSchedulePage() {
                 <div
                   key={item.id}
                   onClick={() => setSelectedAppt(item)}
-                  className="grid grid-cols-12 items-center px-6 py-5 hover:bg-gray-50/50 transition-colors cursor-pointer"
+                  className="grid grid-cols-12 items-center px-6 py-5 hover:bg-gray-50/50 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer"
                 >
                   <div className="col-span-2">
-                    <p className="text-base font-bold text-gray-900">
+                    <p className="text-base font-bold text-gray-900 dark:text-white">
                       {formatTimeStr(item.startTime)}
                     </p>
-                    <p className="text-xs text-gray-500 mt-0.5 font-semibold">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 font-semibold">
                       {formatDateStr(item.startTime)}
                     </p>
                   </div>
@@ -204,48 +204,48 @@ export default function DoctorSchedulePage() {
                       )}
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-gray-900">
+                      <h4 className="text-sm font-bold text-gray-900 dark:text-white">
                         {fullName}
                       </h4>
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                         {item.patient?.gender === 'MALE' ? "Nam" : "Nữ"}
                       </p>
                     </div>
                   </div>
 
                   <div className="col-span-4 pr-4">
-                    <p className="text-sm font-bold text-gray-800">
+                    <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
                       {item.triageSession?.symptomsSummary || "Khám định kỳ"}
                     </p>
                     <p className="text-xs mt-0.5">
                       {item.status === 'COMPLETED' ? (
-                        <span className="text-emerald-600 font-bold">✓ Đã khám</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓ Đã khám</span>
                       ) : item.status === 'CANCELLED' ? (
-                        <span className="text-rose-600 font-bold">✕ Đã hủy</span>
+                        <span className="text-rose-600 dark:text-rose-400 font-bold">✕ Đã hủy</span>
                       ) : (
-                        <span className="text-blue-600 font-bold">⏳ Chờ khám</span>
+                        <span className="text-blue-600 dark:text-blue-400 font-bold">⏳ Chờ khám</span>
                       )}
                     </p>
                   </div>
 
                   <div className="col-span-2">
                     {item.triageSession?.severity === "RED" ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 dark:border-amber-900/30 bg-amber-50 dark:bg-amber-900/20 px-3 py-1.5 text-xs font-bold text-amber-700 dark:text-amber-400 transition-colors">
                         <span>🤖</span> AI Triage: {item.triageSession?.recommendedSpecialty || "Nguy cơ cao"}
                       </span>
                     ) : item.triageSession?.severity === "GREEN" ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
-                        <span className="bg-emerald-500 rounded-full w-3 h-3 text-white flex items-center justify-center text-[8px]">✓</span> Bình thường
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-400 transition-colors">
+                        <span className="bg-emerald-500 dark:bg-emerald-400 rounded-full w-3 h-3 text-white dark:text-emerald-900 flex items-center justify-center text-[8px]">✓</span> Bình thường
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-600">
-                        <span className="text-gray-400 font-black">...</span> Đang phân tích
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-bold text-gray-600 dark:text-gray-300 transition-colors">
+                        <span className="text-gray-400 dark:text-gray-500 font-black">...</span> Đang phân tích
                       </span>
                     )}
                   </div>
 
                   <div className="col-span-1 flex justify-end">
-                    <svg className="w-5 h-5 text-gray-400 hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                    <svg className="w-5 h-5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
                   </div>
                 </div>
               );
@@ -255,11 +255,11 @@ export default function DoctorSchedulePage() {
       </div>
 
       {/* Visual Timeline (Lịch trình trong ngày) */}
-      <div className="mt-4 rounded-2xl border border-gray-200 bg-white shadow-sm p-8">
-        <h2 className="text-xl font-extrabold text-gray-900 mb-8">
+      <div className="mt-4 rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm p-8 transition-colors">
+        <h2 className="text-xl font-extrabold text-gray-900 dark:text-white mb-8 transition-colors">
           Khung giờ làm việc hôm nay
         </h2>
-        <div className="relative border-l-2 border-gray-100 ml-4 pl-8 pb-2">
+        <div className="relative border-l-2 border-gray-100 dark:border-zinc-800 ml-4 pl-8 pb-2 transition-colors">
           {["08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"].map((hour, index, arr) => {
             const isLast = index === arr.length - 1;
             const hourApps = todayAppointments.filter(a => formatTimeStr(a.startTime).startsWith(hour.split(":")[0]));
@@ -267,12 +267,12 @@ export default function DoctorSchedulePage() {
             return (
               <div key={hour} className={`${isLast ? "mb-0" : "mb-10"} relative`}>
                 {/* Timeline Dot */}
-                <div className={`absolute -left-[39px] top-1.5 h-4 w-4 rounded-full ${isLast ? "bg-gray-300" : "bg-gray-200"} border-4 border-white`} />
-                <span className="text-sm font-extrabold text-gray-400 absolute -left-[85px] top-0.5">{hour}</span>
+                <div className={`absolute -left-[39px] top-1.5 h-4 w-4 rounded-full ${isLast ? "bg-gray-300 dark:bg-zinc-600" : "bg-gray-200 dark:bg-zinc-700"} border-4 border-white dark:border-zinc-900 transition-colors`} />
+                <span className="text-sm font-extrabold text-gray-400 dark:text-zinc-500 absolute -left-[85px] top-0.5 transition-colors">{hour}</span>
                 
                 {!isLast && (
                   hourApps.length === 0 ? (
-                    <div className="text-sm font-medium text-gray-300 italic mt-0.5">
+                    <div className="text-sm font-medium text-gray-300 dark:text-zinc-600 italic mt-0.5 transition-colors">
                       — Trống
                     </div>
                   ) : (
@@ -281,20 +281,20 @@ export default function DoctorSchedulePage() {
                         <div 
                           key={app.id} 
                           onClick={() => setSelectedAppt(app)}
-                          className="bg-blue-50/60 border border-blue-100 rounded-2xl p-5 w-full sm:w-2/3 transition-all hover:shadow-md cursor-pointer group"
+                          className="bg-blue-50/60 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/20 rounded-2xl p-5 w-full sm:w-2/3 transition-all hover:shadow-md cursor-pointer group"
                         >
                           <div className="flex justify-between items-start mb-3">
-                            <span className="text-sm font-black text-blue-700">
-                              {formatTimeStr(app.startTime)} - {formatTimeStr(app.endTime)} <span className="text-xs text-blue-500 font-semibold ml-1">({formatDateStr(app.startTime)})</span>
+                            <span className="text-sm font-black text-blue-700 dark:text-blue-400 transition-colors">
+                              {formatTimeStr(app.startTime)} - {formatTimeStr(app.endTime)} <span className="text-xs text-blue-500 dark:text-blue-300 font-semibold ml-1">({formatDateStr(app.startTime)})</span>
                             </span>
-                            <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${app.status === 'CONFIRMED' ? 'bg-emerald-100 text-emerald-700' : 'bg-white text-gray-600 border border-gray-200'}`}>
+                            <span className={`text-xs font-bold px-2.5 py-1 rounded-md transition-colors ${app.status === 'CONFIRMED' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'bg-white dark:bg-zinc-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-zinc-700'}`}>
                               {app.status}
                             </span>
                           </div>
-                          <h4 className="text-base font-bold text-gray-900 group-hover:text-blue-700 transition-colors">
+                          <h4 className="text-base font-bold text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
                             Bệnh nhân: {app.patient?.user?.fullName || "BN"}
                           </h4>
-                          <p className="text-sm text-gray-500 mt-1.5">
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5 transition-colors">
                             {app.triageSession?.symptomsSummary || "Khám định kỳ"}
                           </p>
                         </div>

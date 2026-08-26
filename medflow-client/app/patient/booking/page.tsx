@@ -431,11 +431,11 @@ export default function BookingPage() {
             {history.slice(0, 4).map((app) => (
               <div key={app.id} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
                 <div className="flex justify-between items-center mb-2">
-                  <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${
-                    app.status === 'CONFIRMED' ? 'bg-blue-100 text-blue-700' :
-                    app.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-700' :
-                    app.status === 'CANCELLED' ? 'bg-rose-100 text-rose-700' :
-                    'bg-gray-100 text-gray-600'
+                  <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-colors ${
+                    app.status === 'CONFIRMED' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' :
+                    app.status === 'COMPLETED' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' :
+                    app.status === 'CANCELLED' ? 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400' :
+                    'bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400'
                   }`}>
                     {app.status}
                   </span>

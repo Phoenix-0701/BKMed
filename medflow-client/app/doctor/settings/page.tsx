@@ -193,9 +193,9 @@ export default function DoctorSettingsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Lịch làm việc cố định */}
-        <div className="lg:col-span-2 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-            <h2 className="text-lg font-bold text-gray-900">Lịch làm việc cố định</h2>
+        <div className="lg:col-span-2 rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm transition-colors">
+          <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100 dark:border-zinc-800 transition-colors">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white transition-colors">Lịch làm việc cố định</h2>
             {!isEditing ? (
               <button 
                 onClick={() => setIsEditing(true)}
@@ -231,22 +231,22 @@ export default function DoctorSettingsPage() {
               const isActive = slots.length > 0;
 
               return (
-                <div key={key} className={`flex items-center justify-between ${isEditing ? '' : 'opacity-80'}`}>
+                <div key={key} className={`flex items-center justify-between transition-opacity ${isEditing ? '' : 'opacity-80'}`}>
                   <div className="flex items-center w-full max-w-sm gap-8">
-                    <span className={`w-16 text-sm font-semibold ${isActive ? 'text-gray-900' : 'text-gray-400'}`}>
+                    <span className={`w-16 text-sm font-semibold transition-colors ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-zinc-500'}`}>
                       {label}
                     </span>
                     
                     {isActive ? (
                       <div className="flex gap-2 flex-wrap">
                         {slots.map((s, idx) => (
-                          <span key={idx} className="px-3 py-1 bg-blue-100/50 text-blue-800 rounded-full text-xs font-bold border border-blue-200">
+                          <span key={idx} className="px-3 py-1 bg-blue-100/50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 rounded-full text-xs font-bold border border-blue-200 dark:border-blue-900/50 transition-colors">
                             {s.start} - {s.end}
                           </span>
                         ))}
                       </div>
                     ) : (
-                      <span className="text-xs italic text-gray-400">Không có ca làm việc</span>
+                      <span className="text-xs italic text-gray-400 dark:text-zinc-600 transition-colors">Không có ca làm việc</span>
                     )}
                   </div>
 
@@ -254,7 +254,7 @@ export default function DoctorSettingsPage() {
                   <button 
                     onClick={() => handleToggleDay(key)}
                     disabled={!isEditing}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isActive ? 'bg-blue-600' : 'bg-gray-200'} ${!isEditing && 'cursor-not-allowed'}`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isActive ? 'bg-blue-600' : 'bg-gray-200 dark:bg-zinc-700'} ${!isEditing && 'cursor-not-allowed'}`}
                   >
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isActive ? 'translate-x-6' : 'translate-x-1'}`} />
                   </button>
@@ -265,12 +265,12 @@ export default function DoctorSettingsPage() {
         </div>
 
         {/* Lịch đã khóa */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm h-fit">
-          <h2 className="text-lg font-bold text-gray-900 mb-6">Lịch đã khóa</h2>
+        <div className="rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-sm h-fit transition-colors">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 transition-colors">Lịch đã khóa</h2>
           
           <div className="flex flex-col gap-4">
             {leaves.length === 0 && (
-              <p className="text-sm text-gray-500 italic">Chưa có ngày nghỉ nào được lên lịch.</p>
+              <p className="text-sm text-gray-500 dark:text-zinc-500 italic transition-colors">Chưa có ngày nghỉ nào được lên lịch.</p>
             )}
             
             {leaves.map((leave) => {
@@ -282,20 +282,20 @@ export default function DoctorSettingsPage() {
                 : `${start.toLocaleDateString('vi-VN')} - ${end.toLocaleDateString('vi-VN')}`;
 
               return (
-                <div key={leave.id} className="rounded-xl border border-rose-100 bg-rose-50/30 p-4">
-                  <h4 className="text-sm font-bold text-rose-700 flex items-center gap-2 mb-1.5">
+                <div key={leave.id} className="rounded-xl border border-rose-100 dark:border-rose-900/30 bg-rose-50/30 dark:bg-rose-900/10 p-4 transition-colors">
+                  <h4 className="text-sm font-bold text-rose-700 dark:text-rose-400 flex items-center gap-2 mb-1.5 transition-colors">
                     <span>⚠️</span> {leave.reason}
                   </h4>
-                  <p className="text-base font-semibold text-gray-900 mb-4">{dateStr}</p>
+                  <p className="text-base font-semibold text-gray-900 dark:text-white mb-4 transition-colors">{dateStr}</p>
                   
-                  <div className="flex items-center justify-between border-t border-rose-100/50 pt-3">
-                    <span className="text-[11px] text-gray-500 flex items-center gap-1">
+                  <div className="flex items-center justify-between border-t border-rose-100/50 dark:border-rose-900/30 pt-3 transition-colors">
+                    <span className="text-[11px] text-gray-500 dark:text-zinc-400 flex items-center gap-1 transition-colors">
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                       Đã báo 0 BN
                     </span>
                     <button 
                       onClick={() => handleDeleteLeave(leave.id)}
-                      className="text-[11px] font-bold text-rose-600 hover:text-rose-700"
+                      className="text-[11px] font-bold text-rose-600 dark:text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 transition-colors"
                     >
                       Hủy khóa
                     </button>
@@ -314,29 +314,29 @@ export default function DoctorSettingsPage() {
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Đánh dấu ngày nghỉ</h3>
             <form onSubmit={handleAddLeave} className="flex flex-col gap-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Lý do nghỉ</label>
+                <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1 transition-colors">Lý do nghỉ</label>
                 <input
                   type="text" required
                   placeholder="VD: Nghỉ ốm, Công tác..."
                   value={leaveReason} onChange={e => setLeaveReason(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 p-2.5 text-sm outline-none focus:border-rose-500"
+                  className="w-full rounded-xl border border-gray-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white p-2.5 text-sm outline-none focus:border-rose-500 transition-colors"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Từ ngày</label>
+                  <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1 transition-colors">Từ ngày</label>
                   <input
                     type="date" required
                     value={leaveStart} onChange={e => setLeaveStart(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 p-2.5 text-sm outline-none focus:border-rose-500"
+                    className="w-full rounded-xl border border-gray-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white p-2.5 text-sm outline-none focus:border-rose-500 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Đến ngày</label>
+                  <label className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1 transition-colors">Đến ngày</label>
                   <input
                     type="date" required
                     value={leaveEnd} onChange={e => setLeaveEnd(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 p-2.5 text-sm outline-none focus:border-rose-500"
+                    className="w-full rounded-xl border border-gray-200 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white p-2.5 text-sm outline-none focus:border-rose-500 transition-colors"
                   />
                 </div>
               </div>

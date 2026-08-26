@@ -80,7 +80,7 @@ export default function ForgotPasswordForm({
                 onChange={(e) =>
                   setRequestData({ email: e.target.value })
                 }
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-4 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px] transition-all"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-4 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:[&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_30px_#27272a_inset] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white] min-h-[44px] transition-all"
               />
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function ForgotPasswordForm({
                 placeholder="123456"
                 value={resetData.code}
                 onChange={(e) => setResetData({ ...resetData, code: e.target.value })}
-                className="w-full text-center tracking-[0.5em] font-mono rounded-xl border border-gray-200 bg-gray-50/50 py-3 pl-4 pr-4 text-lg text-gray-900 focus:border-blue-600 focus:bg-white focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px] transition-all"
+                className="w-full text-center tracking-[0.5em] font-mono rounded-xl border border-gray-200 bg-gray-50/50 py-3 pl-4 pr-4 text-lg text-gray-900 focus:border-blue-600 focus:bg-white focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:[&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_30px_#27272a_inset] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white] min-h-[44px] transition-all"
               />
             </div>
           </div>
@@ -138,7 +138,7 @@ export default function ForgotPasswordForm({
                 onChange={(e) =>
                   setResetData({ ...resetData, newPassword: e.target.value })
                 }
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-10 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px] transition-all"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-10 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:[&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_30px_#27272a_inset] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white] min-h-[44px] transition-all"
               />
               <button
                 type="button"

@@ -286,7 +286,7 @@ export default function PatientProfilePage() {
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
+              className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:[&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_30px_#27272a_inset] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white] px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
             />
           </div>
 
@@ -405,7 +405,7 @@ export default function PatientProfilePage() {
                   required
                   value={oldPassword}
                   onChange={(e) => setOldPassword(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
+                  className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:[&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_30px_#27272a_inset] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white] px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
                 />
               </div>
               <div>
@@ -415,7 +415,7 @@ export default function PatientProfilePage() {
                   required
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
+                  className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:[&:-webkit-autofill]:[-webkit-box-shadow:0_0_0_30px_#27272a_inset] dark:[&:-webkit-autofill]:[-webkit-text-fill-color:white] px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
                 />
               </div>
               <div className="flex justify-end gap-3 mt-4">

@@ -247,12 +247,12 @@ export default function PatientProfilePage() {
     if (!modalMessage) return null;
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-        <div className="bg-white rounded-3xl p-8 shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 transform animate-bounce-short">
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${modalMessage.type === 'success' ? 'bg-green-100' : 'bg-red-100'}`}>
+        <div className="bg-white dark:bg-zinc-900 border border-transparent dark:border-zinc-800 rounded-3xl p-8 shadow-2xl flex flex-col items-center max-w-sm w-full mx-4 transform animate-bounce-short transition-colors">
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${modalMessage.type === 'success' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'}`}>
             <span className="text-3xl">{modalMessage.type === 'success' ? '✅' : '❌'}</span>
           </div>
-          <h3 className="text-2xl font-black text-gray-900 mb-2">{modalMessage.title}</h3>
-          <p className="text-gray-500 text-center font-medium">
+          <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2">{modalMessage.title}</h3>
+          <p className="text-gray-500 dark:text-gray-400 text-center font-medium">
             {modalMessage.message}
           </p>
         </div>
@@ -268,46 +268,46 @@ export default function PatientProfilePage() {
         {renderModal()}
 
         <div className="mb-6">
-          <h1 className="text-3xl font-extrabold text-gray-900">
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white transition-colors">
             {isNewUser ? "Hoàn thiện Hồ sơ" : "Chỉnh sửa Hồ sơ"}
           </h1>
-          <p className="text-gray-500 mt-2">
+          <p className="text-gray-500 dark:text-gray-400 mt-2 transition-colors">
             {isNewUser
               ? "Vui lòng cung cấp các thông tin cơ bản trước khi bắt đầu sử dụng hệ thống."
               : "Cập nhật thông tin cá nhân và y tế của bạn."}
           </p>
         </div>
 
-        <form onSubmit={handleSave} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
+        <form onSubmit={handleSave} className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm flex flex-col gap-5 transition-colors">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Họ và tên <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Họ và tên <span className="text-red-500">*</span></label>
             <input
               type="text"
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 text-sm font-medium"
+              className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Ngày sinh <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Ngày sinh <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 required
                 value={dateOfBirth}
                 onChange={(e) => setDateOfBirth(e.target.value)}
-                className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 text-sm font-medium text-gray-700"
+                className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Giới tính <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Giới tính <span className="text-red-500">*</span></label>
               <select
                 required
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 text-sm font-medium"
+                className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
               >
                 <option value="">Chọn giới tính</option>
                 <option value="MALE">Nam</option>
@@ -319,11 +319,11 @@ export default function PatientProfilePage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Nhóm máu</label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Nhóm máu</label>
               <select
                 value={bloodType}
                 onChange={(e) => setBloodType(e.target.value)}
-                className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 text-sm font-medium"
+                className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
               >
                 <option value="">Chưa rõ</option>
                 <option value="A+">A+</option>
@@ -337,25 +337,25 @@ export default function PatientProfilePage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Tiền sử dị ứng</label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Tiền sử dị ứng</label>
               <input
                 type="text"
                 placeholder="VD: Hải sản, Penicillin..."
                 value={allergies}
                 onChange={(e) => setAllergies(e.target.value)}
-                className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 text-sm font-medium"
+                className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Tiền sử bệnh (Tóm tắt)</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Tiền sử bệnh (Tóm tắt)</label>
             <textarea
               rows={4}
               placeholder="Nhập tiền sử bệnh lý, các phẫu thuật đã từng thực hiện..."
               value={medicalHistory}
               onChange={(e) => setMedicalHistory(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 text-sm font-medium resize-none"
+              className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium resize-none transition-colors"
             />
           </div>
 
@@ -364,7 +364,7 @@ export default function PatientProfilePage() {
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
+                className="px-5 py-2.5 rounded-xl font-bold text-gray-600 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors"
               >
                 Hủy
               </button>
@@ -393,36 +393,36 @@ export default function PatientProfilePage() {
       {/* Change Password Modal */}
       {showChangePassword && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-8 shadow-2xl max-w-sm w-full mx-4">
-            <h3 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-2">
+          <div className="bg-white dark:bg-zinc-900 border border-transparent dark:border-zinc-800 rounded-3xl p-8 shadow-2xl max-w-sm w-full mx-4 transition-colors">
+            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-2">
               <span>🔒</span> Đổi mật khẩu
             </h3>
             <form onSubmit={handleChangePassword} className="flex flex-col gap-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Mật khẩu cũ</label>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mật khẩu cũ</label>
                 <input
                   type="password"
                   required
                   value={oldPassword}
                   onChange={(e) => setOldPassword(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 text-sm font-medium"
+                  className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Mật khẩu mới</label>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Mật khẩu mới</label>
                 <input
                   type="password"
                   required
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 text-sm font-medium"
+                  className="w-full rounded-xl border border-gray-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white px-4 py-2.5 focus:border-blue-500 focus:ring-blue-500 dark:focus:bg-zinc-900 text-sm font-medium transition-colors"
                 />
               </div>
               <div className="flex justify-end gap-3 mt-4">
                 <button
                   type="button"
                   onClick={() => setShowChangePassword(false)}
-                  className="px-4 py-2 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="px-4 py-2 rounded-xl font-bold text-gray-600 dark:text-gray-300 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors"
                 >
                   Hủy
                 </button>
@@ -441,12 +441,12 @@ export default function PatientProfilePage() {
 
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900">Hồ sơ Bệnh nhân</h1>
-          <p className="text-gray-500 mt-1 font-medium">Quản lý và xem xét dữ liệu sức khỏe cá nhân của bạn.</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white transition-colors">Hồ sơ Bệnh nhân</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 font-medium transition-colors">Quản lý và xem xét dữ liệu sức khỏe cá nhân của bạn.</p>
         </div>
         <button
           onClick={() => setIsEditing(true)}
-          className="flex items-center gap-2 px-5 py-2 rounded-full border border-gray-200 bg-white shadow-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-2 px-5 py-2 rounded-full border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 shadow-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors"
         >
           <span>✏️</span> Chỉnh sửa
         </button>
@@ -458,7 +458,7 @@ export default function PatientProfilePage() {
         <div className="md:col-span-4 flex flex-col gap-6">
           
           {/* Card Avatar & Tên */}
-          <div className="bg-white border border-gray-200 rounded-3xl p-8 flex flex-col items-center shadow-sm relative group overflow-hidden">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl p-8 flex flex-col items-center shadow-sm relative group overflow-hidden transition-colors">
             <input 
               type="file" 
               accept="image/*" 
@@ -468,7 +468,7 @@ export default function PatientProfilePage() {
             />
             
             <div 
-              className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center mb-5 cursor-pointer relative overflow-hidden ring-4 ring-white shadow-md hover:ring-blue-100 transition-all"
+              className="w-32 h-32 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center mb-5 cursor-pointer relative overflow-hidden ring-4 ring-white dark:ring-zinc-900 shadow-md hover:ring-blue-100 dark:hover:ring-blue-900/50 transition-all"
               onClick={() => fileInputRef.current?.click()}
             >
               {avatarUrl ? (
@@ -483,36 +483,36 @@ export default function PatientProfilePage() {
               </div>
               
               {uploadingAvatar && (
-                <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                <div className="absolute inset-0 bg-white/70 dark:bg-black/50 flex items-center justify-center">
                   <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
               )}
             </div>
             
-            <h2 className="text-2xl font-black text-gray-900 text-center leading-tight mb-1">
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white text-center leading-tight mb-1 transition-colors">
               {user?.fullName}
             </h2>
-            <p className="text-sm font-medium text-gray-500">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 transition-colors">
               {age} tuổi • {genderDisplay}
             </p>
             
-            <div className="mt-5 px-4 py-1.5 bg-indigo-50 border border-indigo-100 rounded-lg">
-              <p className="text-xs font-bold text-indigo-700 tracking-wider">
+            <div className="mt-5 px-4 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-900/30 rounded-lg transition-colors">
+              <p className="text-xs font-bold text-indigo-700 dark:text-indigo-400 tracking-wider">
                 <span className="mr-1">🆔</span> ID: MRN-{user?.id?.substring(0,6).toUpperCase()}
               </p>
             </div>
           </div>
 
           {/* Card Nhóm máu */}
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm flex items-center justify-between">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl p-6 shadow-sm flex items-center justify-between transition-colors">
             <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">🩸 Nhóm máu</p>
-              <h3 className="text-xl font-black text-gray-900">
+              <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1 transition-colors">🩸 Nhóm máu</p>
+              <h3 className="text-xl font-black text-gray-900 dark:text-white transition-colors">
                 {user?.patientProfile?.bloodType || "Chưa rõ"}
               </h3>
             </div>
             {user?.patientProfile?.bloodType && (
-              <span className="px-3 py-1 bg-rose-50 text-rose-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-rose-100">
+              <span className="px-3 py-1 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-widest rounded-full border border-rose-100 dark:border-rose-900/30 transition-colors">
                 Đã xác minh
               </span>
             )}
@@ -523,32 +523,32 @@ export default function PatientProfilePage() {
         <div className="md:col-span-8 flex flex-col gap-6">
           
           {/* Card Tiền sử bệnh */}
-          <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm">
-            <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
-              <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl p-8 shadow-sm transition-colors">
+            <div className="flex items-center justify-between mb-6 border-b border-gray-100 dark:border-zinc-800 pb-4 transition-colors">
+              <h3 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2 transition-colors">
                 <span>🩺</span> Tiền sử bệnh lý
               </h3>
-              <span className="flex items-center gap-1.5 text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100">
+              <span className="flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-900/30 transition-colors">
                 <span>✨</span> AI Summarized
               </span>
             </div>
             
-            <div className="relative pl-5 border-l-2 border-gray-100 space-y-6">
+            <div className="relative pl-5 border-l-2 border-gray-100 dark:border-zinc-800 space-y-6 transition-colors">
               
               {/* Dị ứng */}
               <div className="relative">
-                <div className="absolute w-3 h-3 bg-white border-2 border-amber-400 rounded-full -left-[27px] top-1"></div>
-                <h4 className="text-sm font-black text-gray-900">Tiền sử dị ứng</h4>
-                <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                <div className="absolute w-3 h-3 bg-white dark:bg-zinc-900 border-2 border-amber-400 rounded-full -left-[27px] top-1 transition-colors"></div>
+                <h4 className="text-sm font-black text-gray-900 dark:text-white transition-colors">Tiền sử dị ứng</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed transition-colors">
                   {user?.patientProfile?.allergies || "Không ghi nhận."}
                 </p>
               </div>
 
               {/* Bệnh nền */}
               <div className="relative">
-                <div className="absolute w-3 h-3 bg-white border-2 border-gray-300 rounded-full -left-[27px] top-1"></div>
-                <h4 className="text-sm font-black text-gray-900">Tiền sử bệnh lý & Phẫu thuật</h4>
-                <p className="text-sm text-gray-600 mt-1 leading-relaxed whitespace-pre-wrap">
+                <div className="absolute w-3 h-3 bg-white dark:bg-zinc-900 border-2 border-gray-300 dark:border-gray-600 rounded-full -left-[27px] top-1 transition-colors"></div>
+                <h4 className="text-sm font-black text-gray-900 dark:text-white transition-colors">Tiền sử bệnh lý & Phẫu thuật</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed whitespace-pre-wrap transition-colors">
                   {user?.patientProfile?.medicalHistory || "Không có tiền sử bệnh lý nghiêm trọng được ghi nhận."}
                 </p>
               </div>
@@ -557,9 +557,9 @@ export default function PatientProfilePage() {
           </div>
 
           {/* Card Account Settings */}
-          <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-3xl p-8 shadow-sm transition-colors">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+              <h3 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2 transition-colors">
                 <span>⚙️</span> Cài đặt tài khoản
               </h3>
             </div>
@@ -567,12 +567,12 @@ export default function PatientProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
               {/* Change Password Block */}
-              <div onClick={() => setShowChangePassword(true)} className="block border border-gray-200 rounded-2xl p-5 hover:border-blue-300 hover:bg-blue-50/50 transition-colors group cursor-pointer">
+              <div onClick={() => setShowChangePassword(true)} className="block border border-gray-200 dark:border-zinc-700 rounded-2xl p-5 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors group cursor-pointer">
                 <div className="flex items-start gap-4">
                   <div className="text-2xl mt-1 group-hover:scale-110 transition-transform">🔒</div>
                   <div>
-                    <h4 className="text-sm font-black text-gray-900 group-hover:text-blue-700">Đổi mật khẩu</h4>
-                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                    <h4 className="text-sm font-black text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">Đổi mật khẩu</h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed transition-colors">
                       Cập nhật thông tin đăng nhập và tăng cường bảo mật tài khoản.
                     </p>
                   </div>

@@ -71,7 +71,7 @@ export default function RegisterForm({
                 onChange={(e) =>
                   setRegisterData({ ...registerData, fullName: e.target.value })
                 }
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-4 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px] transition-all"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-4 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-white dark:focus:border-blue-500 dark:focus:bg-zinc-900 dark:focus:ring-blue-500/20 min-h-[44px] transition-all duration-300"
               />
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function RegisterForm({
                 onChange={(e) =>
                   setRegisterData({ ...registerData, email: e.target.value })
                 }
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-4 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px] transition-all"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-4 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-white dark:focus:border-blue-500 dark:focus:bg-zinc-900 dark:focus:ring-blue-500/20 min-h-[44px] transition-all duration-300"
               />
             </div>
           </div>
@@ -109,7 +109,7 @@ export default function RegisterForm({
                 onChange={(e) =>
                   setRegisterData({ ...registerData, password: e.target.value })
                 }
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-10 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px] transition-all"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-2.5 pl-10 pr-10 text-sm text-gray-900 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-white dark:focus:border-blue-500 dark:focus:bg-zinc-900 dark:focus:ring-blue-500/20 min-h-[44px] transition-all duration-300"
               />
               <button
                 type="button"
@@ -124,7 +124,7 @@ export default function RegisterForm({
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 w-full min-h-[48px] rounded-full bg-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-blue-800 disabled:opacity-50 flex items-center justify-center"
+            className="mt-2 w-full min-h-[48px] rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-700 hover:shadow-blue-600/40 active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center"
           >
             {loading ? "Đang xử lý..." : "Đăng ký tài khoản"}
           </button>
@@ -152,7 +152,7 @@ export default function RegisterForm({
                 placeholder="123456"
                 value={otpData.code}
                 onChange={(e) => setOtpData({ code: e.target.value })}
-                className="w-full text-center tracking-[0.5em] font-mono rounded-xl border border-gray-200 bg-gray-50/50 py-3 pl-4 pr-4 text-lg text-gray-900 focus:border-blue-600 focus:bg-white focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white min-h-[44px] transition-all"
+                className="w-full text-center tracking-[0.5em] font-mono rounded-xl border border-gray-200 bg-gray-50/50 py-3 pl-4 pr-4 text-lg text-gray-900 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-white dark:focus:border-blue-500 dark:focus:bg-zinc-900 dark:focus:ring-blue-500/20 min-h-[44px] transition-all duration-300"
               />
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function RegisterForm({
           <button
             type="submit"
             disabled={loading || otpData.code.length !== 6}
-            className="w-full min-h-[48px] rounded-full bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-emerald-700 disabled:opacity-50 flex items-center justify-center"
+            className="w-full min-h-[48px] rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-600/30 transition-all hover:bg-emerald-700 hover:shadow-emerald-600/40 active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 flex items-center justify-center mt-2"
           >
             {loading ? "Đang kiểm tra..." : "Xác nhận & Hoàn tất"}
           </button>

@@ -7,7 +7,9 @@ services:
     startCommand: cd medflow-server && npm run start:prod
     envVars:
       - key: DATABASE_URL
-        value: postgresql://postgres.ohqvbfpuvbjsovwfyskk:Siu%401234%40123@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true
+        value: postgresql://neondb_owner:npg_xNvPKl9ga3kX@ep-flat-credit-b3y09v1y-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require&pgbouncer=true&connect_timeout=15
+      - key: DIRECT_URL
+        value: postgresql://neondb_owner:npg_xNvPKl9ga3kX@ep-flat-credit-b3y09v1y-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require&connect_timeout=15
       - key: JWT_SECRET
         value: medflow-secret-key-for-local-demo-only
       - key: JWT_EXPIRES_IN
@@ -27,7 +29,7 @@ services:
     dockerfilePath: medflow-ai/Dockerfile
     envVars:
       - key: DB_URI
-        value: postgresql://postgres.ohqvbfpuvbjsovwfyskk:Siu%401234%40123@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres
+        value: postgresql://neondb_owner:npg_xNvPKl9ga3kX@ep-flat-credit-b3y09v1y-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
       - key: OPENAI_API_KEY
         sync: false
       - key: COHERE_API_KEY
